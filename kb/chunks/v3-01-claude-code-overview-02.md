@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/01-claude-code-overview.md"]
 source_urls: ["https://code.claude.com/docs/en/mcp-quickstart", "https://news.creeta.com/en/claude-code-best-practices-2026/", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://petronellatech.com/blog/claude-code-cli-guide-ai-powered-development/"]
-retrieval_questions: ["Claude Code 개요에서 자주 발생하는 문제는?", "Claude Code 개요 트러블슈팅 방법은?", "Claude Code 개요의 보안 고려사항은?", "Claude Code 개요 권한 설정은 어떻게 하는가?"]
+retrieval_questions: ["Claude Code 개요에서 자주 발생하는 문제는?", "Claude Code 개요 트러블슈팅 방법은?", "Claude Code 개요의 Claude Code가 아닌 것은 무엇인가?", "Claude Code 개요의 Plan Mode (계획 모드)은 무엇인가?"]
 related_chunks: ["v3-01-claude-code-overview-01", "v3-claude-code-guide", "v3-cli-registration"]
 supersedes: ["chunk.004", "chunk.005"]
 ---

@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["05_mcp_catalog/02-libraries-and-sdks.md"]
 source_urls: ["https://code.claude.com/docs/en/agent-sdk/subagents", "https://code.claude.com/docs/en/mcp-quickstart", "https://github.com/modelcontextprotocol/servers", "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/README.md"]
-retrieval_questions: ["관련 라이브러리 및 SDK란 무엇인가?", "관련 라이브러리 및 SDK의 핵심 개념은?"]
+retrieval_questions: ["관련 라이브러리 및 SDK란 무엇인가?", "관련 라이브러리 및 SDK의 핵심 개념은?", "관련 라이브러리 및 SDK의 Claude Code 공식 플러그인은 무엇인가?", "관련 라이브러리 및 SDK의 Node.js / TypeScript 패키지는 무엇인가?", "관련 라이브러리 및 SDK의 Python 패키지는 무엇인가?"]
 related_chunks: ["v3-02-libraries-and-sdks-02", "v3-mcp-sdk"]
 supersedes: ["chunk.087", "chunk.088", "chunk.089", "chunk.090"]
 ---

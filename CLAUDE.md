@@ -24,20 +24,24 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── authored/          # 신규 집필 청크 원본 (빌더 입력)
 │   ├── docs/              # 사람이 읽는 위키 22종
 │   ├── sources/           # 원본 리서치 전문 (색인 제외, 출처 추적용)
+│   ├── corrections.yaml   # 사실 정정 원장 (1차 출처 필수)
 │   ├── manifest.jsonl     # 청크 메타데이터 (생성물)
 │   ├── embeddings.jsonl   # 임베딩 입력 텍스트 (생성물)
 │   └── ingestion.yaml     # 색인 대상 include/exclude 정의
 ├── tools/
 │   ├── kb_audit.py        # 청크 감사 하네스 (T-01~T-08)
 │   ├── build_v3.py        # v1+v2.3+authored → v3.0 빌더
-│   └── make_golden.py     # 검색 골든셋 생성기
+│   ├── make_golden.py     # 검색 골든셋 생성기
+│   └── eval_retrieval.py  # BM25 검색 평가
 ├── tests/
 │   ├── run_checks.sh      # 품질 게이트 (CI 진입점)
 │   └── golden_retrieval.jsonl
 └── docs/
     ├── TEST-PLAN.md       # 시험법
     ├── TEST-RESULTS.md    # 시험결과
-    └── LESSONS-LEARNED.md # 제작 과정 회고
+    ├── LESSONS-LEARNED.md # 제작 과정 회고
+    ├── RAG-AGENT-SPEC.md  # RAG 제작 에이전트 설계 기록
+    └── INTERNAL-FILL-INS.md # 사내 정보 기입 요청
 ```
 
 ## 기술 스택
@@ -59,6 +63,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | 두 세트 중복 비교 | `python3 tools/kb_audit.py <A> --compare <B>` |
 | 골든셋 통계 | `python3 tools/make_golden.py kb/manifest.jsonl --stats` |
 | 골든셋 생성 | `python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl` |
+| BM25 검색 평가 | `python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl --compare-modes` |
 
 청크 재빌드는 원본 v1/v2.3 입력이 필요하다(이 저장소에 없음 — Google Drive `Rawdata`).
 `kb/chunks/`만 고치려면 아래 "청크 수정" 절을 따를 것.
@@ -91,9 +96,19 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 `kb/sources/`에는 파생 청크의 원본 전문이 있다. `**/*.md`로 적재하면 같은 내용이
 두 번 색인된다. `kb/ingestion.yaml`의 include/exclude를 지킬 것.
 
+### 검색 평가는 본문 전용 색인으로 한다
+`retrieval_questions`로 골든셋을 만들었으므로, 그 질문을 색인에 넣은 채 평가하면
+정답을 색인해 두고 찾는 셈이 된다(실측 Recall@10 = 1.000, 순수 누출).
+평가 시 `--mode body`가 유일하게 유효한 수치다.
+
+### 사실 정정은 corrections.yaml로 한다
+`kb/chunks/`를 직접 고치면 다음 빌드에서 되돌아간다. 정정은 `kb/corrections.yaml`에
+**1차 출처와 함께** 등록한다. 확인했으나 원문이 맞았던 항목도 `verified_no_change`에
+남긴다 — "확인했는데 맞았다"와 "확인 안 했다"는 다른 상태다.
+
 ### 측정하지 않은 것을 검증했다고 쓰지 않는다
-현재 통과한 것은 **구조 시험뿐**이다. 내용 사실성(T-11)과 검색 성능(T-12)은 미실행이다.
-문서·요약·커밋 메시지에서 이 구분을 흐리지 않는다.
+현재 통과한 것은 **구조 시험 + 부분 검증**이다. 사실성(T-11)은 조기 만료 항목만,
+검색 성능(T-12)은 BM25 하한만 측정됐다. 문서·요약·커밋 메시지에서 이 구분을 흐리지 않는다.
 
 ### 문서 작성 규칙
 - 한 문단 3~5문장. 긴 문단은 임베딩에서 의미가 희석된다.
@@ -114,7 +129,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 |---|---|
 | 전체 청크 | 2026-11-05 (분기) |
 | 모델 가격 항목 | 2026-09-01 (도입기 할인 종료) |
-| MCP 2026-07-28 RC 항목 | 2026-10-01 (정식화 시 stateless 전환) |
+| MCP 2026-07-28 항목 | 2026-08-05 검증 완료 (RC→stable 정정 C-001) |
 
 `kb/ingestion.yaml`의 `review` 절이 정본이다.
 

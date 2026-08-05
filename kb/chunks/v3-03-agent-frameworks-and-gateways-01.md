@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["05_mcp_catalog/03-agent-frameworks-and-gateways.md"]
 source_urls: ["https://github.com/PrefectHQ/fastmcp", "https://github.com/anthropics/claude-agent-sdk", "https://github.com/e2b-dev/awesome-mcp-gateways", "https://github.com/langchain-ai/langgraph", "https://modelcontextprotocol.io/specification", "https://temporal.io", "https://www.anthropic.com/engineering/building-effective-agents"]
-retrieval_questions: ["에이전트 프레임워크 및 게이트웨이란 무엇인가?", "에이전트 프레임워크 및 게이트웨이의 핵심 개념은?"]
+retrieval_questions: ["에이전트 프레임워크 및 게이트웨이란 무엇인가?", "에이전트 프레임워크 및 게이트웨이의 핵심 개념은?", "에이전트 프레임워크 및 게이트웨이의 프레임워크 vs 게이트웨이는 무엇인가?"]
 related_chunks: ["v3-03-agent-frameworks-and-gateways-02", "v3-03-agent-frameworks-and-gateways-03"]
 supersedes: ["chunk.129", "chunk.130"]
 ---

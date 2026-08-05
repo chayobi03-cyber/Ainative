@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/04-quality-evaluation-ci.md"]
 source_urls: ["https://arxiv.org/pdf/2404.05520", "https://docs.mcp-agent.com", "https://github.com/YawLabs/mcp-compliance", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.augmentcode.com/mcp/mcp-inspector"]
-retrieval_questions: ["품질 평가 및 CI란 무엇인가?", "품질 평가 및 CI의 핵심 개념은?", "품질 평가 및 CI는 어떻게 설정하는가?", "품질 평가 및 CI 초기 구성 절차는?"]
+retrieval_questions: ["품질 평가 및 CI란 무엇인가?", "품질 평가 및 CI의 핵심 개념은?", "3계층 테스트 전략을 알려줘", "품질 평가 및 CI의 결정론 최대화 원칙은 무엇인가?", "품질 평가 및 CI의 MCP Inspector은 무엇인가?"]
 related_chunks: ["v3-04-quality-evaluation-ci-02", "v3-mcp-eval", "v3-regression-gate"]
 supersedes: ["chunk.114", "chunk.115"]
 ---

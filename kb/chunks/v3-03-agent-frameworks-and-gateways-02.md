@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["05_mcp_catalog/03-agent-frameworks-and-gateways.md"]
 source_urls: ["https://github.com/PrefectHQ/fastmcp", "https://github.com/anthropics/claude-agent-sdk", "https://github.com/e2b-dev/awesome-mcp-gateways", "https://github.com/langchain-ai/langgraph", "https://modelcontextprotocol.io/specification", "https://temporal.io", "https://www.anthropic.com/engineering/building-effective-agents"]
-retrieval_questions: ["MCP Gateway 도입 시점에 대해 알려줘", "오픈소스 후보 (벤더 블로그 기준, 자체 PoC 필수)에 대해 알려줘", "평가 기준에 대해 알려줘", "에이전트 프레임워크 및 게이트웨이에는 무엇이 있는가?"]
+retrieval_questions: ["에이전트 프레임워크 및 게이트웨이에는 무엇이 있는가?", "에이전트 프레임워크 및 게이트웨이의 MCP Gateway 도입 시점은 무엇인가?", "오픈소스 후보 (벤더 블로그 기준, 자체 PoC 필수)에 대해 알려줘", "평가 기준을 알려줘", "에이전트 프레임워크 및 게이트웨이의 공식 MCP SDK은 무엇인가?"]
 related_chunks: ["v3-03-agent-frameworks-and-gateways-01", "v3-03-agent-frameworks-and-gateways-03"]
 supersedes: ["chunk.131", "chunk.132"]
 ---
@@ -65,5 +65,5 @@ FastMCP 1.0은 2024년 공식 MCP Python SDK에 통합되었습니다. 독립 �
 ### MCP 사양 버전
 
 - 2025-11-25 (최신 stable): OpenID Connect Discovery, icons, incremental scope consent
-- 2026-07-28 RC: stateless core, MCP Apps, Roots/Sampling/Logging deprecated 예정
+- 2026-07-28 stable: stateless core, MCP Apps, Roots/Sampling/Logging deprecated 예정
 - Transport: stdio(로컬) + Streamable HTTP(원격)만 사용. SSE는 deprecated

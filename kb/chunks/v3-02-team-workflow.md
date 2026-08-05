@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/02-team-workflow.md"]
 source_urls: ["https://medium.com/@kinjal01radadiya/how-sub-agents-work-in-claude-code-a-complete-guide-bafc66bbaf70", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://www.pubnub.com/blog/best-practices-claude-code-subagents-part-two-from-prompts-to-pipelines/"]
-retrieval_questions: ["팀 워크플로우란 무엇인가?", "팀 워크플로우의 핵심 개념은?", "팀 워크플로우는 어떻게 설정하는가?", "팀 워크플로우 초기 구성 절차는?", "팀 워크플로우 운영 시 주의점은?"]
+retrieval_questions: ["팀 워크플로우란 무엇인가?", "팀 워크플로우의 핵심 개념은?", "팀 워크플로우의 버전 관리 대상 파일은 무엇인가?", "팀 워크플로우의 팀 온보딩 체크리스트는 무엇인가?", "서브에이전트 팀 패턴을 알려줘"]
 related_chunks: ["v3-doctor-command", "v3-06-deployment-adoption-governance-01", "v3-06-deployment-adoption-governance-02"]
 supersedes: ["chunk.063", "chunk.064", "chunk.065", "chunk.066"]
 ---

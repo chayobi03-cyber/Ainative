@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/06-deployment-adoption-governance.md"]
 source_urls: ["https://agentwikis.com/wiki/claude-code/wiki/entities/plugin-marketplaces.md", "https://code.claude.com/docs/en/best-practices", "https://code.claude.com/docs/en/mcp", "https://github.com/modelcontextprotocol/mcpb", "https://obot.ai/blog/ai-governance-trends-2026/"]
-retrieval_questions: ["배포·채택·거버넌스란 무엇인가?", "배포·채택·거버넌스의 핵심 개념은?", "배포·채택·거버넌스는 어떻게 설정하는가?", "배포·채택·거버넌스 초기 구성 절차는?"]
+retrieval_questions: ["배포·채택·거버넌스란 무엇인가?", "배포·채택·거버넌스의 핵심 개념은?", "배포·채택·거버넌스의 핵심 원칙은 무엇인가?", "배포·채택·거버넌스의 Claude Code 플러그인/마켓플레이스는 무엇인가?", "배포·채택·거버넌스의 Managed settings 거버넌스는 무엇인가?"]
 related_chunks: ["v3-06-deployment-adoption-governance-02", "v3-comprehensive-checklist", "v3-deployment-channels"]
 supersedes: ["chunk.124", "chunk.125"]
 ---

@@ -66,8 +66,10 @@ review:
   next_review: "2026-11-05"
   early_expiry:
     - topic: "모델 가격"
-      reason: "도입기 할인 종료 예정"
+      reason: "Sonnet 5 도입가 $2/$10 → 정가 $3/$15 전환"
       recheck_by: "2026-09-01"
-    - topic: "MCP 2026-07-28 RC"
-      reason: "정식화 시 stateless core 전환"
-      recheck_by: "2026-10-01"
+      last_verified: "2026-08-05"    # 정확 확인 (V-001)
+    - topic: "MCP 사양 리비전"
+      reason: "2026-07-28이 stable로 확정됨. 다음 리비전 동향 추적"
+      recheck_by: "2026-11-05"
+      last_verified: "2026-08-05"    # RC→stable 정정 (C-001)

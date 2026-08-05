@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["05_mcp_catalog/02-libraries-and-sdks.md"]
 source_urls: ["https://code.claude.com/docs/en/agent-sdk/subagents", "https://code.claude.com/docs/en/mcp-quickstart", "https://github.com/modelcontextprotocol/servers", "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/README.md"]
-retrieval_questions: ["TypeScript SDK에 대해 알려줘", "Python SDK에 대해 알려줘", "서브에이전트 SDK 정의에 대해 알려줘", "관련 라이브러리 및 SDK에는 무엇이 있는가?"]
+retrieval_questions: ["관련 라이브러리 및 SDK에는 무엇이 있는가?", "관련 라이브러리 및 SDK의 TypeScript SDK은 무엇인가?", "관련 라이브러리 및 SDK의 Python SDK은 무엇인가?", "관련 라이브러리 및 SDK의 서브에이전트 SDK 정의는 무엇인가?"]
 related_chunks: ["v3-02-libraries-and-sdks-01", "v3-mcp-sdk"]
 supersedes: ["chunk.091", "chunk.092", "chunk.093"]
 ---

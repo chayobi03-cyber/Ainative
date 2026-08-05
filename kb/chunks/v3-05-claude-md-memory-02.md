@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/05-claude-md-memory.md"]
 source_urls: ["https://news.creeta.com/en/claude-code-best-practices-2026/", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://petronellatech.com/blog/claude-code-cli-guide-ai-powered-development/"]
-retrieval_questions: ["CLAUDE.md 메모리 시스템 운영 시 주의점은?", "CLAUDE.md 메모리 시스템의 모범 사례는?", "CLAUDE.md 메모리 시스템에서 자주 발생하는 문제는?", "CLAUDE.md 메모리 시스템 트러블슈팅 방법은?", "CLAUDE.md 메모리 시스템의 보안 고려사항은?"]
+retrieval_questions: ["CLAUDE.md 메모리 시스템 운영 시 주의점은?", "CLAUDE.md 메모리 시스템의 모범 사례는?", "CLAUDE.md 메모리 시스템의 CLAUDE.md 작성 원칙은 무엇인가?", "CLAUDE.md 메모리 시스템의 /init 명령 활용은 무엇인가?", "메모리 라우팅 패턴을 알려줘"]
 related_chunks: ["v3-05-claude-md-memory-01", "v3-01-skills-setup", "v3-02-hooks-setup"]
 supersedes: ["chunk.031", "chunk.032", "chunk.033"]
 ---

@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["02_setup/04-tool-generation-agent-setup.md"]
 source_urls: ["https://code.claude.com/docs/en/mcp", "https://docs.mcp-agent.com", "https://github.com/github/spec-kit", "https://github.com/jlowin/fastmcp", "https://github.com/modelcontextprotocol/inspector", "https://www.anthropic.com/engineering/writing-tools-for-agents"]
-retrieval_questions: ["툴 생성 에이전트 설정법 운영 시 주의점은?", "툴 생성 에이전트 설정법의 모범 사례는?", "툴 생성 에이전트 설정법에서 자주 발생하는 문제는?", "툴 생성 에이전트 설정법 트러블슈팅 방법은?"]
+retrieval_questions: ["툴 생성 에이전트 설정법 운영 시 주의점은?", "툴 생성 에이전트 설정법의 모범 사례는?", "툴 생성 에이전트 설정법의 mcp-eval 테스트 케이스 예제는 무엇인가?", "CI 회귀 게이트 (GitHub Actions)에 대해 알려줘", "pre-commit 설정 (생성 코드 자동 검증)에 대해 알려줘"]
 related_chunks: ["v3-04-tool-generation-agent-setup-01", "v3-mcp-sdk", "v3-03-agent-frameworks-and-gateways-01"]
 supersedes: ["chunk.111", "chunk.112"]
 ---

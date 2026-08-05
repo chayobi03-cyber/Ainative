@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["04_exceptions/01-troubleshooting.md"]
 source_urls: ["https://code.claude.com/docs/en/hooks-guide", "https://code.claude.com/docs/en/mcp-quickstart", "https://hidekazu-konishi.com/entry/claude_code_hooks_complete_guide.html", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://smartscope.blog/en/generative-ai/claude/claude-code-hooks-guide/"]
-retrieval_questions: ["트러블슈팅 가이드란 무엇인가?", "트러블슈팅 가이드의 핵심 개념은?", "트러블슈팅 가이드 운영 시 주의점은?", "트러블슈팅 가이드의 모범 사례는?", "트러블슈팅 가이드에서 자주 발생하는 문제는?"]
+retrieval_questions: ["트러블슈팅 가이드란 무엇인가?", "트러블슈팅 가이드의 핵심 개념은?", "트러블슈팅 가이드의 MCP 서버 문제는 무엇인가?", "/mcp에 \"No MCP servers configured\" 문제는 어떻게 해결하나요?", "\"Failed to connect\" 또는 \"Connection error\" 문제는 어떻게 해결하나요?"]
 related_chunks: ["v3-03-observability"]
 supersedes: ["chunk.073", "chunk.075", "chunk.076", "chunk.077"]
 ---

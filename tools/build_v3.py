@@ -87,6 +87,47 @@ QUESTION_TEMPLATES = {
 }
 
 
+def josa(word: str, with_jong: str, without_jong: str) -> str:
+    """한글 종성 유무에 따라 조사를 고른다. '워크플로우은' 같은 어색한 질문을 막는다.
+
+    끝 글자가 한글 음절이 아니면(영문 식별자 등) 종성 있음으로 취급한다 —
+    'Plan Mode은'보다는 어색함이 덜하고, 영문 약어는 읽는 사람이 받침처럼 읽는다.
+    """
+    if not word:
+        return with_jong
+    ch = word[-1]
+    if "가" <= ch <= "힣":
+        return without_jong if (ord(ch) - 0xAC00) % 28 == 0 else with_jong
+    return with_jong
+
+
+def heading_to_question(head: str, doc_title: str) -> str | None:
+    """소제목을 검색 질문으로 바꾼다.
+
+    제목 템플릿만 쓰면 "X 운영 시 주의점은?" 류의 일반 질문만 나와, 실제 사용자가
+    던지는 구체 질의("hook exit 2가 뭐야?")와 어휘가 겹치지 않는다. 본문 소제목에는
+    그 구체 어휘가 이미 들어 있으므로 그대로 끌어 쓴다.
+    """
+    h = re.sub(r"[`*]", "", head).strip()
+    h = re.sub(r"^\d+[.)]\s*", "", h)
+    if len(h) < 3 or len(h) > 60:
+        return None
+    if re.fullmatch(r"[\d.\s—-]+", h):
+        return None
+    # "증상: /mcp에 No MCP servers configured" → 증상 그대로가 최고의 질의다
+    m = re.match(r"^증상\s*[:：]\s*(.+)$", h)
+    if m:
+        return f"{m.group(1).strip()} 문제는 어떻게 해결하나요?"
+    if h.endswith("?"):
+        return h
+    # 조사로 끝나면 이미 구절이므로 그대로 질문화
+    if re.search(r"(방법|절차|설정|구성|예시|패턴|전략|기준|목록|비교)$", h):
+        return f"{h}{josa(h, '을', '를')} 알려줘"
+    if len(h) < 25:
+        return f"{doc_title}의 {h}{josa(h, '은', '는')} 무엇인가?"
+    return f"{h}에 대해 알려줘"
+
+
 def merge_undersized(buckets: list[list[dict]]) -> list[list[dict]]:
     """목표 하한에 못 미치는 버킷을 인접 버킷에 흡수시킨다.
 
@@ -271,20 +312,20 @@ def convert_v23(chunks_dir: Path, manifest_path: Path) -> list[dict]:
                 head = s["section"] or s["section_id"] or ""
                 body_parts.append(f"## {head}\n\n{b}" if head else b)
 
-            qs = []
+            # 질문 구성: 템플릿 1~2개(일반 재현율) + 소제목 유래 3개(구체 어휘).
+            # 템플릿만 쓰면 실제 질의와 어휘가 안 겹치고, 소제목만 쓰면 문서 전체를
+            # 겨냥한 질의를 놓친다. 둘을 섞는다.
+            generic = []
             for s in bucket:
                 for tpl in QUESTION_TEMPLATES.get(s["section_id"], []):
-                    qs.append(tpl.format(t=doc_title))
-            if not qs:
-                # 템플릿에 없는 섹션(카탈로그류)은 실제 소제목에서 질문을 만든다.
-                heads = [
-                    h.strip()
-                    for s in bucket
-                    for h in re.findall(r"^#{2,4}\s+(.+)$", s["body"], re.M)
-                ]
-                qs = [f"{h}에 대해 알려줘" for h in heads[:3]]
-                qs.append(f"{doc_title}에는 무엇이 있는가?")
-            qs = list(dict.fromkeys(qs))[:5]
+                    generic.append(tpl.format(t=doc_title))
+            heads = [h for s in bucket for h in re.findall(r"^#{2,4}\s+(.+)$", s["body"], re.M)]
+            specific = [q for q in (heading_to_question(h, doc_title) for h in heads) if q]
+            if not generic:
+                generic = [f"{doc_title}에는 무엇이 있는가?"]
+            qs = list(dict.fromkeys(generic[:2] + specific))[:5]
+            if len(qs) < 3:
+                qs = list(dict.fromkeys(qs + generic))[:5]
 
             out.append(
                 {
@@ -351,6 +392,58 @@ def load_authored(root: Path) -> list[dict]:
     return out
 
 
+def apply_corrections(chunks: list[dict], ledger: Path) -> list[str]:
+    """kb/corrections.yaml의 검증된 정정을 청크에 적용한다.
+
+    생성 청크를 직접 편집하면 다음 빌드에서 되돌아가고, v1/v2.3 원본은 이 저장소에
+    없어 고칠 경로가 없다. 그래서 정정을 원장으로 분리해 빌드마다 재적용한다.
+
+    적용 건수가 0인 정정은 예외를 던진다 — 대상이 사라진 정정을 남겨 두면 원장이
+    조용히 썩고, 다음 사람은 이미 반영된 줄 알게 된다.
+    """
+    if not ledger.exists():
+        return []
+    text = ledger.read_text(encoding="utf-8")
+    log: list[str] = []
+
+    # 최소 파서: `corrections:` 블록의 항목만 읽는다(PyYAML 의존 회피).
+    blocks = re.split(r"\n  - id: ", text.split("verified_no_change:")[0])[1:]
+    for blk in blocks:
+        cid = blk.splitlines()[0].strip()
+        pairs = re.findall(r'-\s*from:\s*"([^"]+)"\s*\n\s*to:\s*"([^"]+)"', blk)
+        meta_fresh = re.search(r'set_meta:\s*\n\s*freshness:\s*"([^"]+)"', blk)
+        if not pairs:
+            continue
+        # 긴 문자열부터 치환해야 짧은 패턴이 먼저 먹어 치우지 않는다.
+        pairs.sort(key=lambda p: -len(p[0]))
+        applied = 0
+        for c in chunks:
+            hit = False
+            for frm, to in pairs:
+                if frm in c["_body"]:
+                    c["_body"] = c["_body"].replace(frm, to)
+                    hit = True
+                for f in ("title", "section_path"):
+                    if frm in str(c.get(f, "")):
+                        c[f] = str(c[f]).replace(frm, to)
+                        hit = True
+                c["retrieval_questions"] = [q.replace(frm, to) for q in c["retrieval_questions"]]
+                if any(frm in q for q in as_list(c.get("retrieval_questions"))):
+                    hit = True
+            if hit:
+                applied += 1
+                if meta_fresh:
+                    c["freshness"] = meta_fresh.group(1)
+                c.setdefault("_corrections", []).append(cid)
+        if applied == 0:
+            raise SystemExit(
+                f"정정 {cid}이 어떤 청크에도 적용되지 않았습니다. "
+                f"이미 반영됐다면 corrections.yaml에서 제거하십시오."
+            )
+        log.append(f"{cid}: 청크 {applied}개에 적용")
+    return log
+
+
 def link_across(chunks: list[dict]) -> None:
     """태그 교집합이 큰 청크끼리 상호 연결을 보강한다."""
     ids = {c["chunk_id"] for c in chunks}
@@ -378,12 +471,15 @@ def main() -> int:
     ap.add_argument("--v23-chunks", type=Path, required=True)
     ap.add_argument("--v23-manifest", type=Path, required=True)
     ap.add_argument("--authored", type=Path, default=None)
+    ap.add_argument("--corrections", type=Path, default=Path("kb/corrections.yaml"))
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args()
 
     chunks = convert_v1(a.v1) + convert_v23(a.v23_chunks, a.v23_manifest)
     if a.authored and a.authored.exists():
         chunks += load_authored(a.authored)
+    for line in apply_corrections(chunks, a.corrections):
+        print(f"  정정 {line}")
     link_across(chunks)
 
     cdir = a.out / "chunks"
@@ -395,9 +491,11 @@ def main() -> int:
     for c in chunks:
         body = c.pop("_body")
         origin = c.pop("_origin")
+        corr = c.pop("_corrections", [])
         (cdir / f"{c['chunk_id']}.md").write_text(emit(c, body), encoding="utf-8")
         rec = {k: v for k, v in c.items()}
         rec["origin"] = origin
+        rec["corrections_applied"] = corr
         rec["file_path"] = f"chunks/{c['chunk_id']}.md"
         rec["tokens_est"] = estimate_tokens(body)
         manifest.append(rec)

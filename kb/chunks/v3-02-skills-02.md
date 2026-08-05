@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/02-skills.md"]
 source_urls: ["https://code.claude.com/docs/en/skills", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview", "https://www.pubnub.com/blog/best-practices-claude-code-subagents-part-two-from-prompts-to-pipelines/"]
-retrieval_questions: ["Skills (스킬) 운영 시 주의점은?", "Skills (스킬)의 모범 사례는?", "Skills (스킬)에서 자주 발생하는 문제는?", "Skills (스킬) 트러블슈팅 방법은?", "Skills (스킬)의 보안 고려사항은?"]
+retrieval_questions: ["Skills (스킬) 운영 시 주의점은?", "Skills (스킬)의 모범 사례는?", "Skills (스킬)의 스킬 작성 모범 사례는 무엇인가?", "Skills (스킬)의 스킬 발견 경로는 무엇인가?", "Skills (스킬)의 플러그인 마켓플레이스는 무엇인가?"]
 related_chunks: ["v3-02-skills-01", "v3-01-skills-setup", "v3-component-selection"]
 supersedes: ["chunk.010", "chunk.011", "chunk.012"]
 ---

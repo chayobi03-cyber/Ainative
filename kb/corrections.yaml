@@ -1,0 +1,93 @@
+# 내용 정정 원장 (fact corrections ledger)
+#
+# 왜 이 파일이 필요한가
+#   kb/chunks/ 는 빌더 출력이라 직접 고치면 다음 빌드에서 되돌아간다. 그런데 v1/v2.3
+#   유래 청크의 원본은 이 저장소에 없다(Google Drive Rawdata). 사실 오류를 고칠 경로가
+#   없으면 검증 결과를 반영할 수 없다.
+#
+# 규칙
+#   1. 정정은 반드시 1차 출처(verified_source)를 동반한다. 2차 인용으로 고치지 않는다.
+#   2. `applies: 0`인 정정은 빌드를 실패시킨다. 대상이 사라졌는데 남아 있는 정정은
+#      원장을 조용히 썩게 만든다.
+#   3. 검증했으나 원문이 맞았던 항목도 `verified_no_change`에 남긴다. "확인했는데
+#      맞았다"와 "확인 안 했다"는 다른 상태다.
+#
+# 스키마: tools/build_v3.py: apply_corrections()
+
+corrections:
+  - id: C-001
+    date: "2026-08-05"
+    reason: >
+      MCP 2026-07-28 리비전이 정식 stable로 공개됐다. 원본 리서치(2026-08-04 작성)는
+      이를 release candidate로 기술했으나, GitHub 릴리스가 "This release marks the
+      stable release of the 2026-07-28 revision"으로 명시한다. RC는 2026-05-29에
+      잠겼고 stable은 2026-07-28에 게시됐다.
+    verified_source: "https://github.com/modelcontextprotocol/modelcontextprotocol/releases"
+    verified_by: "1차 출처 직접 확인"
+    replace:
+      - from: "2026-07-28 RC"
+        to: "2026-07-28 stable"
+      - from: "2026-07-28 RC 정식화 시"
+        to: "2026-07-28 stable 채택 시"
+    set_meta:
+      freshness: "2026-08"
+
+# 검증했고 원문이 정확했던 항목. 고칠 것이 없어도 검증 사실 자체를 기록한다.
+verified_no_change:
+  - id: V-001
+    date: "2026-08-05"
+    claim: "Opus 5는 입력 기준 Sonnet 5의 2.5배(도입기), 정가 복귀 후 1.67배. 5배는 Opus 4.1 기준이며 Opus 4.1은 deprecated."
+    result: 정확
+    evidence: >
+      공식 가격표 기준 Opus 5 $5/MTok, Sonnet 5 도입가 $2/MTok(2026-08-31까지),
+      정가 $3/MTok(2026-09-01부터). 5/2=2.5배, 5/3=1.67배로 일치.
+      Opus 4.1은 $15/$75이며 "retired, except on Bedrock and Google Cloud"로 표기.
+    verified_source: "https://platform.claude.com/docs/en/about-claude/pricing"
+    chunks: ["v3-model-routing", "v3-cost-visibility"]
+
+  - id: V-002
+    date: "2026-08-05"
+    claim: "Claude 4.7 이후 모델은 새 토크나이저를 쓰며 같은 텍스트에 약 30% 더 많은 토큰을 생성한다."
+    result: 정확
+    evidence: >
+      공식 문서 원문: "Claude 4.7 and later models and Claude Mythos Preview use a
+      newer tokenizer... produces approximately 30% more tokens for the same text.
+      Claude Sonnet 4.6 and earlier models use the previous tokenizer."
+    verified_source: "https://platform.claude.com/docs/en/about-claude/pricing"
+    chunks: ["v3-model-routing", "v3-budget-management"]
+
+  - id: V-003
+    date: "2026-08-05"
+    claim: "prompt caching write는 1.25×(5분) 또는 2.0×(1시간), read는 0.10× — 90% 할인. Batch API는 전 토큰 50% 할인."
+    result: 정확
+    evidence: >
+      공식 가격표의 캐싱 배수표와 일치(5m write 1.25x, 1h write 2x, cache read 0.1x).
+      Batch API "50% discount on both input and output tokens" 확인.
+    verified_source: "https://platform.claude.com/docs/en/about-claude/pricing"
+    chunks: ["v3-prompt-caching"]
+
+  - id: V-004
+    date: "2026-08-05"
+    claim: "5분 캐시 티어는 write당 약 1.4회 read에서 손익분기."
+    result: 산술적으로 정확 (공식 문서 표현보다 정밀)
+    evidence: >
+      write 1.25x + N회 read 0.1x = N × 1.0 → N = 1.25/0.9 = 1.39.
+      공식 문서는 "pays off after just one cache read"로 느슨하게 표현하지만,
+      N=1에서는 1.35 vs 1.00으로 아직 손해다. 원본 KB 수치가 더 정확하다.
+    verified_source: "https://platform.claude.com/docs/en/about-claude/pricing"
+    chunks: ["v3-prompt-caching"]
+
+# 검증을 시도했으나 접근이 막혀 확인하지 못한 항목. 미확인 상태를 명시적으로 남긴다.
+unverified:
+  - id: U-001
+    claim: "MCP 사양 필수 통제 문구(토큰 패스스루 금지, RFC 8707 audience 검증 등)의 원문 일치"
+    blocker: "modelcontextprotocol.io 사양 페이지가 프록시에서 HTTP 403"
+    next_action: "네트워크 가용 환경에서 2026-07-28 사양 원문 대조"
+  - id: U-002
+    claim: "FastMCP 시장 점유율 70%·하루 100만 다운로드"
+    blocker: "원본이 이미 벤더 자체 주장으로 표기함. 1차 검증 수단 없음"
+    next_action: "사내 규칙으로 인용하지 말 것"
+  - id: U-003
+    claim: "기업 도입 수치(Coinbase 5%, Ramp 50%, Uber 21,000시간 등)"
+    blocker: "전부 2차 취합 블로그 출처"
+    next_action: "인용 시 반드시 '2차 출처' 표기 유지"

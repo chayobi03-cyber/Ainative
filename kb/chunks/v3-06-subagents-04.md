@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/06-subagents.md"]
 source_urls: ["https://code.claude.com/docs/en/agent-sdk/subagents", "https://code.claude.com/docs/en/sub-agents", "https://github.com/vignesh2027/claude-best-practice", "https://hidekazu-konishi.com/entry/claude_code_subagents_and_orchestration_guide.html", "https://medium.com/@kinjal01radadiya/how-sub-agents-work-in-claude-code-a-complete-guide-bafc66bbaf70", "https://www.pubnub.com/blog/best-practices-claude-code-subagents-part-two-from-prompts-to-pipelines/"]
-retrieval_questions: ["Subagents (서브에이전트)에서 자주 발생하는 문제는?", "Subagents (서브에이전트) 트러블슈팅 방법은?", "Subagents (서브에이전트)의 보안 고려사항은?", "Subagents (서브에이전트) 권한 설정은 어떻게 하는가?"]
+retrieval_questions: ["Subagents (서브에이전트)에서 자주 발생하는 문제는?", "Subagents (서브에이전트) 트러블슈팅 방법은?", "서브에이전트가 파일 수정 후 변경 사항이 보이지 않는 경우에 대해 알려줘", "Subagents (서브에이전트)의 파일 수정 후 에이전트가 로드되지 않는 경우는 무엇인가?", "Subagents (서브에이전트)의 description이 모호한 경우는 무엇인가?"]
 related_chunks: ["v3-06-subagents-01", "v3-06-subagents-02", "v3-06-subagents-03"]
 supersedes: ["chunk.039", "chunk.040"]
 ---

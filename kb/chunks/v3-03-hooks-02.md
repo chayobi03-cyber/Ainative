@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/03-hooks.md"]
 source_urls: ["https://code.claude.com/docs/en/hooks", "https://code.claude.com/docs/en/hooks-guide", "https://hidekazu-konishi.com/entry/claude_code_hooks_complete_guide.html", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://smartscope.blog/en/generative-ai/claude/claude-code-hooks-guide/", "https://www.heyuan110.com/posts/ai/2026-02-28-claude-code-hooks-guide/", "https://www.morphllm.com/claude-code-hooks"]
-retrieval_questions: ["Hooks (훅)는 어떻게 설정하는가?", "Hooks (훅) 초기 구성 절차는?"]
+retrieval_questions: ["Hooks (훅)는 어떻게 설정하는가?", "Hooks (훅) 초기 구성 절차는?", "Hooks (훅)의 프로젝트 설정 파일 생성은 무엇인가?", "Hooks (훅)의 자동 포맷팅 훅 (PostToolUse)은 무엇인가?", "Hooks (훅)의 위험 명령 차단 훅 (PreToolUse)은 무엇인가?"]
 related_chunks: ["v3-03-hooks-01", "v3-03-hooks-03"]
 supersedes: ["chunk.016"]
 ---

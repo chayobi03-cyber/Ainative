@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/05-cost-performance-optimization.md"]
 source_urls: ["https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching", "https://www.anthropic.com/engineering/advanced-tool-use", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.npmjs.com/package/ccusage"]
-retrieval_questions: ["비용·성능 최적화란 무엇인가?", "비용·성능 최적화의 핵심 개념은?", "비용·성능 최적화는 어떻게 설정하는가?", "비용·성능 최적화 초기 구성 절차는?"]
+retrieval_questions: ["비용·성능 최적화란 무엇인가?", "비용·성능 최적화의 핵심 개념은?", "비용·성능 최적화의 절감 스택 요약은 무엇인가?", "Prompt caching 설정을 알려줘", "비용·성능 최적화의 ccusage 설치는 무엇인가?"]
 related_chunks: ["v3-05-cost-performance-optimization-02", "v3-cost-visibility", "v3-budget-management"]
 supersedes: ["chunk.119", "chunk.120"]
 ---

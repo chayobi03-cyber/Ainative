@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/01-security-governance.md"]
 source_urls: ["https://github.com/vignesh2027/claude-best-practice", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://www.morphllm.com/claude-code-hooks"]
-retrieval_questions: ["보안 및 거버넌스란 무엇인가?", "보안 및 거버넌스의 핵심 개념은?", "보안 및 거버넌스는 어떻게 설정하는가?", "보안 및 거버넌스 초기 구성 절차는?", "보안 및 거버넌스 운영 시 주의점은?"]
+retrieval_questions: ["보안 및 거버넌스란 무엇인가?", "보안 및 거버넌스의 핵심 개념은?", "보안 및 거버넌스의 파일 접근 차단은 무엇인가?", "보안 및 거버넌스의 사전 커밋 보호 훅은 무엇인가?", "보안 및 거버넌스의 MCP 시크릿 관리는 무엇인가?"]
 related_chunks: ["v3-comprehensive-checklist", "v3-deployment-governance", "v3-06-deployment-adoption-governance-01"]
 supersedes: ["chunk.058", "chunk.059", "chunk.060", "chunk.061"]
 ---

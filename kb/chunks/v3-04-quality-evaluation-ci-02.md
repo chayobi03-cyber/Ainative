@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/04-quality-evaluation-ci.md"]
 source_urls: ["https://arxiv.org/pdf/2404.05520", "https://docs.mcp-agent.com", "https://github.com/YawLabs/mcp-compliance", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.augmentcode.com/mcp/mcp-inspector"]
-retrieval_questions: ["품질 평가 및 CI 운영 시 주의점은?", "품질 평가 및 CI의 모범 사례는?", "품질 평가 및 CI에서 자주 발생하는 문제는?", "품질 평가 및 CI 트러블슈팅 방법은?"]
+retrieval_questions: ["품질 평가 및 CI 운영 시 주의점은?", "품질 평가 및 CI의 모범 사례는?", "품질 평가 및 CI의 골든셋 회귀 게이트는 무엇인가?", "품질 평가 및 CI의 비결정성 다루기는 무엇인가?", "품질 평가 및 CI의 회귀 게이트 운영은 무엇인가?"]
 related_chunks: ["v3-04-quality-evaluation-ci-01", "v3-mcp-eval", "v3-regression-gate"]
 supersedes: ["chunk.116", "chunk.117"]
 ---

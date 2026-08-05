@@ -8,7 +8,7 @@ use_cases: ["MCP 서버 전송 방식 선택", "로컬/원격 배포 설계"]
 tags: ["MCP", "transport", "stdio", "streamable-http", "SSE", "deprecated"]
 priority: "high"
 confidence: "verified"
-freshness: "2026-08 기준"
+freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["sanae-AI-hyeobeobyong-tul-saengseong-eijeonteu-gucug.md"]
 retrieval_questions: ["MCP 전송 방식은 무엇이 있는가?", "SSE는 왜 사용하지 말아야 하는가?", "stdio의 한계는 무엇인가?"]
@@ -41,7 +41,7 @@ MCP 사양이 정의하는 live 전송 옵션은 stdio(로컬)와 Streamable HTT
 ### HTTP+SSE (deprecated)
 - 2024-11-05 초기 방식 (POST/GET 두 엔드포인트).
 - 2025-03-26에 deprecated 처리.
-- 2026-07-28 RC에서 정식 Deprecated 라이프사이클로 분류, 향후 제거 대상.
+- 2026-07-28 stable에서 정식 Deprecated 라이프사이클로 분류, 향후 제거 대상.
 - **신규 구축에서 절대 사용 금지.**
 
 ## 권고사항

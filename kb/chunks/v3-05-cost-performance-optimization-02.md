@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["03_operations/05-cost-performance-optimization.md"]
 source_urls: ["https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching", "https://www.anthropic.com/engineering/advanced-tool-use", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.npmjs.com/package/ccusage"]
-retrieval_questions: ["비용·성능 최적화 운영 시 주의점은?", "비용·성능 최적화의 모범 사례는?", "비용·성능 최적화에서 자주 발생하는 문제는?", "비용·성능 최적화 트러블슈팅 방법은?"]
+retrieval_questions: ["비용·성능 최적화 운영 시 주의점은?", "비용·성능 최적화의 모범 사례는?", "비용·성능 최적화의 캐시 히트율 모니터링은 무엇인가?", "비용·성능 최적화의 Tool Search Tool (토큰 절감)은 무엇인가?", "비용·성능 최적화의 토큰 효율 툴 설계는 무엇인가?"]
 related_chunks: ["v3-05-cost-performance-optimization-01", "v3-cost-visibility", "v3-budget-management"]
 supersedes: ["chunk.121", "chunk.122"]
 ---

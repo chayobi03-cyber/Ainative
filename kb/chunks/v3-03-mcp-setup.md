@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["02_setup/03-mcp-setup.md"]
 source_urls: ["https://code.claude.com/docs/en/mcp-quickstart", "https://github.com/ericbuess/claude-code-docs/blob/main/docs/mcp.md", "https://institute.sfeir.com/en/claude-code/claude-code-mcp-model-context-protocol/cheatsheet/"]
-retrieval_questions: ["MCP 설정법란 무엇인가?", "MCP 설정법의 핵심 개념은?", "MCP 설정법는 어떻게 설정하는가?", "MCP 설정법 초기 구성 절차는?", "MCP 설정법 운영 시 주의점은?"]
+retrieval_questions: ["MCP 설정법란 무엇인가?", "MCP 설정법의 핵심 개념은?", "MCP 설정법의 HTTP 서버 추가 (원격)은 무엇인가?", "MCP 설정법의 stdio 서버 추가 (로컬)은 무엇인가?", "MCP 설정법의 SSE 서버 추가 (레거시)은 무엇인가?"]
 related_chunks: ["v3-04-mcp-01", "v3-04-mcp-02", "v3-04-mcp-03"]
 supersedes: ["chunk.053", "chunk.054", "chunk.055", "chunk.056"]
 ---

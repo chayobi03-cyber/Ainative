@@ -11,28 +11,38 @@ confidence: "draft"
 freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["갭 분석 신규 집필 — 원본은 버전 목록만 있고 이행 절차 없음"]
-retrieval_questions: ["MCP 사양을 어느 버전으로 올려야 하나요?", "SSE에서 Streamable HTTP로 어떻게 옮기나요?", "2026-07-28 RC로 가면 무엇이 깨지나요?", "MCP deprecated 기능은 무엇인가요?"]
+retrieval_questions: ["MCP 사양을 어느 버전으로 올려야 하나요?", "SSE에서 Streamable HTTP로 어떻게 옮기나요?", "2026-07-28로 가면 무엇이 깨지나요?", "MCP deprecated 기능은 무엇인가요?", "MCP 최신 stable 버전은?"]
 related_chunks: ["v3-mcp-spec", "v3-mcp-transport", "v3-mcp-dev-rules"]
 ---
 
 # MCP 사양 버전 마이그레이션 가이드
 
 ## 한 줄 요약
-신규 구축은 **2025-11-25 stable에 고정**하고, 2026-07-28 RC는 정식화 전까지 채택하지 않되
-**stateless 전제로 설계**해 두어 이행 비용을 미리 없앤다.
+**2026-07-28이 현재 최신 stable이다**(2026-07-28 게시). 신규 구축은 처음부터
+**stateless 전제**로 설계하고, 기존 서버는 전송 → 인증 → 상태제거 순으로 이행한다.
 
-> **집필 근거**: 원본 리서치 문서는 각 리비전의 변경점을 나열했지만 "무엇을 어떤 순서로
-> 고쳐야 하는가"는 다루지 않았다. 아래 이행 순서는 원본에 기록된 변경점에서 도출한
-> 설계 판단이며, 실제 적용 전 각 리비전 원문으로 재확인해야 한다.
+> **집필 근거**: 원본 리서치 문서(2026-08-04 작성)는 각 리비전의 변경점을 나열했지만
+> "무엇을 어떤 순서로 고쳐야 하는가"는 다루지 않았다. 아래 이행 순서는 원본에 기록된
+> 변경점에서 도출한 설계 판단이다.
+>
+> **정정 이력**: 원본은 2026-07-28을 release candidate로 기술했으나, 2026-08-05 확인 결과
+> **정식 stable로 게시**됐다(RC 잠금 2026-05-29 → stable 게시 2026-07-28). 이에 따라
+> "정식화까지 보류" 권고를 철회하고 채택 판단표를 다시 썼다.
+> 출처: `github.com/modelcontextprotocol/modelcontextprotocol/releases`
 
 ## 버전 선택 결정표
 
 | 상황 | 권장 | 이유 |
 |---|---|---|
-| 신규 서버 구축 | **2025-11-25** | 최신 stable. CIMD·incremental scope 확보 |
-| 기존 2025-03-26 서버 | 2025-06-18 경유 후 2025-11-25 | structured output·elicitation이 중간 단계에 도입 |
-| 2026-07-28 RC 채택 | **보류** | RC 단계. 정식화 시 core가 stateless로 바뀜 |
-| SSE 기반 기존 서버 | 즉시 Streamable HTTP | 2025-03-26에 deprecated, RC에서 제거 대상 |
+| 신규 서버 구축 | **2026-07-28** | 현재 최신 stable. stateless core로 수평 확장이 단순해짐 |
+| 보수적 신규 구축 | 2025-11-25 | 클라이언트 호환 범위를 넓게 잡아야 할 때. 단 deprecated 항목을 안고 감 |
+| 기존 2025-03-26 서버 | 2025-06-18 경유 후 상위로 | structured output·elicitation이 중간 단계에 도입 |
+| SSE 기반 기존 서버 | 즉시 Streamable HTTP | 2025-03-26에 deprecated, 제거 대상 |
+
+**2026-07-28을 기본 권장으로 바꾼 이유**: stateless core는 `initialize` 핸드셰이크와
+`Mcp-Session-Id` 헤더를 없앤다. 어떤 요청이든 아무 서버 인스턴스에 떨어져도 되므로
+sticky routing과 공유 세션 저장소가 프로토콜 계층에서 불필요해진다. 사내 배포에서
+이 단순화의 가치가 크다. 또한 공식 deprecation 정책이 생겨 **12개월 유예**가 보장된다.
 
 ## 이행 순서 (깨질 위험이 낮은 순)
 
@@ -49,13 +59,15 @@ related_chunks: ["v3-mcp-spec", "v3-mcp-transport", "v3-mcp-dev-rules"]
 Registration은 2025-11-25에서 SHOULD→MAY로 강등되며 CIMD로 대체되었다.
 인증 구현 직전에 해당 리비전 원문을 다시 읽는다.
 
-### 3. 상태 제거 — RC 대비 선투자
-2026-07-28 RC의 stateless core를 미리 흡수한다. 서버를 가능한 한 stateless로 만들면
-RC 정식화 시 이행 비용이 거의 0이 되고, 동시에 git worktree 병렬 세션 충돌도 사라진다.
+### 3. 상태 제거 — 2026-07-28의 핵심 변화
+stateless core를 흡수한다. 서버를 stateless로 만들면 수평 확장 시 sticky routing이
+불필요해지고, git worktree 병렬 세션 충돌도 함께 사라진다.
 상태가 꼭 필요하면 외부 저장소로 빼고 문서화한다.
 
-### 4. deprecated 예고 항목 회피
-RC 기준 Roots / Sampling / Logging이 deprecated 예정이다. 신규 구현은 대체 경로를 쓴다.
+### 4. deprecated 항목 정리
+2026-07-28에서 Roots / Sampling / Logging이 deprecated 됐다. 공식 deprecation 정책상
+**deprecation과 제거 사이에 12개월 유예**가 있으므로 즉시 깨지지는 않지만,
+신규 구현은 처음부터 대체 경로를 쓴다.
 
 | deprecated 예정 | 대체 |
 |---|---|

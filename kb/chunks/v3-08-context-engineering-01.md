@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/08-context-engineering.md"]
 source_urls: ["https://agents.md/", "https://code.claude.com/docs/en/best-practices", "https://code.claude.com/docs/en/mcp", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.linuxfoundation.org/press/linux-foundation-launches-agentic-ai-foundation"]
-retrieval_questions: ["컨텍스트 엔지니어링란 무엇인가?", "컨텍스트 엔지니어링의 핵심 개념은?", "컨텍스트 엔지니어링는 어떻게 설정하는가?", "컨텍스트 엔지니어링 초기 구성 절차는?"]
+retrieval_questions: ["컨텍스트 엔지니어링란 무엇인가?", "컨텍스트 엔지니어링의 핵심 개념은?", "컨텍스트 엔지니어링의 핵심 개념은 무엇인가?", "AGENTS.md 단일 소스 전략을 알려줘", "컨텍스트 엔지니어링의 Claude Code 전용은 무엇인가?"]
 related_chunks: ["v3-08-context-engineering-02", "v3-08-context-engineering-03"]
 supersedes: ["chunk.102", "chunk.103"]
 ---

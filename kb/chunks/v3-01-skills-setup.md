@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["02_setup/01-skills-setup.md"]
 source_urls: ["https://code.claude.com/docs/en/skills", "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview"]
-retrieval_questions: ["Skills 설정법란 무엇인가?", "Skills 설정법의 핵심 개념은?", "Skills 설정법는 어떻게 설정하는가?", "Skills 설정법 초기 구성 절차는?", "Skills 설정법 운영 시 주의점은?"]
+retrieval_questions: ["Skills 설정법란 무엇인가?", "Skills 설정법의 핵심 개념은?", "Skills 설정법의 디렉토리 생성은 무엇인가?", "Skills 설정법의 SKILL.md 작성은 무엇인가?", "Skills 설정법의 결과 출력은 무엇인가?"]
 related_chunks: ["v3-02-hooks-setup", "v3-03-mcp-setup", "v3-02-skills-01"]
 supersedes: ["chunk.043", "chunk.044", "chunk.045", "chunk.046"]
 ---

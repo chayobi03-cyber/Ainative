@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["02_setup/02-hooks-setup.md"]
 source_urls: ["https://code.claude.com/docs/en/hooks-guide", "https://smartscope.blog/en/generative-ai/claude/claude-code-hooks-guide/", "https://www.morphllm.com/claude-code-hooks"]
-retrieval_questions: ["Hooks 설정법란 무엇인가?", "Hooks 설정법의 핵심 개념은?", "Hooks 설정법는 어떻게 설정하는가?", "Hooks 설정법 초기 구성 절차는?", "Hooks 설정법 운영 시 주의점은?"]
+retrieval_questions: ["Hooks 설정법란 무엇인가?", "Hooks 설정법의 핵심 개념은?", "Hooks 설정법의 설정 파일 위치는 무엇인가?", "Hooks 설정법의 자동 포맷팅 (PostToolUse)은 무엇인가?", "Hooks 설정법의 위험 명령 차단 (PreToolUse)은 무엇인가?"]
 related_chunks: ["v3-01-skills-setup", "v3-03-mcp-setup", "v3-03-hooks-01"]
 supersedes: ["chunk.048", "chunk.049", "chunk.050", "chunk.051"]
 ---

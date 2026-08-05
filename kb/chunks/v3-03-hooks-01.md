@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/03-hooks.md"]
 source_urls: ["https://code.claude.com/docs/en/hooks", "https://code.claude.com/docs/en/hooks-guide", "https://hidekazu-konishi.com/entry/claude_code_hooks_complete_guide.html", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/", "https://smartscope.blog/en/generative-ai/claude/claude-code-hooks-guide/", "https://www.heyuan110.com/posts/ai/2026-02-28-claude-code-hooks-guide/", "https://www.morphllm.com/claude-code-hooks"]
-retrieval_questions: ["Hooks (훅)란 무엇인가?", "Hooks (훅)의 핵심 개념은?"]
+retrieval_questions: ["Hooks (훅)란 무엇인가?", "Hooks (훅)의 핵심 개념은?", "Hooks (훅)의 핵심 특성은 무엇인가?", "Hooks (훅)의 이벤트 라이프사이클 (2026년 기준)은 무엇인가?"]
 related_chunks: ["v3-03-hooks-02", "v3-03-hooks-03"]
 supersedes: ["chunk.015"]
 ---

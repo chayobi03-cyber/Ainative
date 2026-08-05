@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/08-context-engineering.md"]
 source_urls: ["https://agents.md/", "https://code.claude.com/docs/en/best-practices", "https://code.claude.com/docs/en/mcp", "https://www.anthropic.com/engineering/writing-tools-for-agents", "https://www.linuxfoundation.org/press/linux-foundation-launches-agentic-ai-foundation"]
-retrieval_questions: ["컨텍스트 엔지니어링의 보안 고려사항은?", "컨텍스트 엔지니어링 권한 설정은 어떻게 하는가?"]
+retrieval_questions: ["컨텍스트 엔지니어링의 보안 고려사항은?", "컨텍스트 엔지니어링 권한 설정은 어떻게 하는가?", "컨텍스트 엔지니어링의 AGENTS.md 간접 프롬프트 인젝션은 무엇인가?", "컨텍스트 엔지니어링의 파일 기반 메모리의 민감 정보는 무엇인가?", "컨텍스트 엔지니어링의 llms.txt 정보 노출은 무엇인가?"]
 related_chunks: ["v3-08-context-engineering-01", "v3-08-context-engineering-02"]
 supersedes: ["chunk.106"]
 ---

@@ -11,10 +11,10 @@
 | 버전 | v3.0 (2026-08-05) |
 | RAG 청크 | 100개 (추정 94,985 토큰) |
 | 위키 문서 | 22종 |
-| 검색 골든셋 | 357쌍 |
+| 검색 골든셋 | 408쌍 |
 | 품질 게이트 | 5/5 통과 |
-| 내용 사실성 검증 | **미실행** |
-| 검색 성능 측정 | **미실행** (벡터 DB 미적재) |
+| 내용 사실성 검증 | 조기 만료 항목만 완료 (오류 1건 정정) |
+| 검색 성능 측정 | BM25 하한만 (Recall@10=0.944). dense 미실행 |
 
 **구조는 검증됐고 내용은 검증되지 않았다.** 이 구분을 유지할 것.
 
@@ -74,12 +74,15 @@ v1 47개 중 32개는 주제 자체가 v2.3에 없었고, v2.3에는 `retrieval_
 | [`docs/TEST-PLAN.md`](docs/TEST-PLAN.md) | 시험 항목 정의, 토큰 추정 방법과 한계 |
 | [`docs/TEST-RESULTS.md`](docs/TEST-RESULTS.md) | 실측 결과, 원본 결함, 자체 발견 버그 |
 | [`docs/LESSONS-LEARNED.md`](docs/LESSONS-LEARNED.md) | 제작 과정 회고 — 틀렸던 판단 기록 |
+| [`docs/RAG-AGENT-SPEC.md`](docs/RAG-AGENT-SPEC.md) | RAG 제작 에이전트 설계 기록 + 기성 도구 권장 |
+| [`docs/INTERNAL-FILL-INS.md`](docs/INTERNAL-FILL-INS.md) | 사내 정보 기입 요청 (draft 7건) |
 | [`CLAUDE.md`](CLAUDE.md) | AI 어시스턴트 작업 규칙 |
 
 ## 다음 단계
 
-1. 벡터 DB 적재 후 Recall@10 / MRR@10 실측
-2. 실제 사용자 질의 30건 수집 → held-out 평가셋 구성
-3. `confidence: auto-merged` 46건의 자동 생성 질문 사람 검토
-4. `confidence: draft` 7건에 사내 실정 반영
-5. 2026-09-01까지 모델 가격 항목 재확인
+1. `docs/INTERNAL-FILL-INS.md`의 사내 정보 기입 (비용 기준선 2주 실측이 최장 리드타임)
+2. 벡터 DB 적재 후 dense/hybrid 평가 — BM25 하한 Recall@10=0.944 대비
+3. 실제 사용자 질의 30건 수집 → held-out 평가셋
+4. 골든셋 복수 정답 허용 전환 (단일 라벨 편향 제거)
+5. FAQ·체크리스트 질문 단위 분할 (어트랙터 완화)
+6. 2026-09-01까지 모델 가격 항목 재확인

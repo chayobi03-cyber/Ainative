@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["05_mcp_catalog/01-open-source-mcp-servers.md"]
 source_urls: ["https://deepwiki.com/modelcontextprotocol/servers/2-reference-servers-overview", "https://github.com/modelcontextprotocol/servers", "https://institute.sfeir.com/en/claude-code/claude-code-mcp-model-context-protocol/cheatsheet/", "https://mcpplaygroundonline.com/blog/awesome-mcp-servers", "https://raw.githubusercontent.com/modelcontextprotocol/servers/main/README.md", "https://techsy.io/en/blog/best-mcp-servers-claude-code", "https://www.totalum.app/blog/best-mcp-for-claude-code-2026"]
-retrieval_questions: ["핵심 스택 (3개 우선 설치)에 대해 알려줘", "전체 권장 서버에 대해 알려줘", "오픈소스 MCP 서버 카탈로그에는 무엇이 있는가?"]
+retrieval_questions: ["오픈소스 MCP 서버 카탈로그에는 무엇이 있는가?", "오픈소스 MCP 서버 카탈로그의 핵심 스택 (3개 우선 설치)은 무엇인가?", "오픈소스 MCP 서버 카탈로그의 전체 권장 서버는 무엇인가?"]
 related_chunks: ["v3-01-open-source-mcp-servers-01", "v3-01-open-source-mcp-servers-03"]
 supersedes: ["chunk.083"]
 ---

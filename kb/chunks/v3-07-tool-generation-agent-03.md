@@ -11,7 +11,7 @@ freshness: "2026-08"
 review_by: "2026-11-05"
 source_documents: ["01_concepts/07-tool-generation-agent.md"]
 source_urls: ["https://code.claude.com/docs/en/best-practices", "https://code.claude.com/docs/en/mcp", "https://www.anthropic.com/engineering/advanced-tool-use", "https://www.anthropic.com/engineering/building-effective-agents", "https://www.anthropic.com/engineering/code-execution-with-mcp", "https://www.anthropic.com/engineering/multi-agent-research-system", "https://www.anthropic.com/engineering/writing-tools-for-agents"]
-retrieval_questions: ["툴 생성 에이전트에서 자주 발생하는 문제는?", "툴 생성 에이전트 트러블슈팅 방법은?", "툴 생성 에이전트의 보안 고려사항은?", "툴 생성 에이전트 권한 설정은 어떻게 하는가?"]
+retrieval_questions: ["툴 생성 에이전트에서 자주 발생하는 문제는?", "툴 생성 에이전트 트러블슈팅 방법은?", "실패·안티패턴을 알려줘", "툴 생성 에이전트의 흔한 실수는 무엇인가?", "툴 생성 에이전트의 주의사항은 무엇인가?"]
 related_chunks: ["v3-07-tool-generation-agent-01", "v3-07-tool-generation-agent-02"]
 supersedes: ["chunk.098", "chunk.099"]
 ---
