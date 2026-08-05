@@ -1,0 +1,56 @@
+---
+chunk_id: "v3-mcp-security-cve"
+title: "MCP 보안: 실제 사고와 CVE 사례"
+category: "security"
+section_path: "MCP > 보안 > 사고 사례"
+audience: ["보안 담당자", "개발자", "아키텍트"]
+use_cases: ["보안 위협 평가", "의존성 스캔 기준", "보안 교육 자료"]
+tags: ["CVE", "mcp-remote", "Cursor", "rug-pull", "MCPTox", "tool-poisoning", "CVSS-9.6"]
+priority: "high"
+confidence: "verified"
+freshness: "2026-08 기준"
+review_by: "2026-11-05"
+source_documents: ["sanae-AI-hyeobeobyong-tul-saengseong-eijeonteu-gucug.md"]
+retrieval_questions: ["mcp-remote CVE-2025-6514란?", "Cursor CVE는 무엇인가?", "MCP 서버 30% 취약 통계의 신뢰도는?", "모델이 악성 툴을 자체 차단할 수 있는가?"]
+related_chunks: ["v3-mcp-security-spec", "v3-deployment-governance"]
+supersedes: ["rag-mcp-security-cve-001"]
+---
+
+# MCP 보안: 실제 사고와 CVE 사례
+
+## 한 줄 요약
+MCP 보안 위협은 이론적 가능성이 아니라 실제 CVE로 입증되었다. mcp-remote CVSS 9.6, Cursor config swap, Postmark 백도어 등 실제 사고가 발생했으며, "모델이 알아서 걸러줄 것"이라는 가정은 성립하지 않는다.
+
+## 주요 CVE/사고
+
+### mcp-remote CVE-2025-6514 (CVSS 9.6)
+- JFrog Security Research 2025-07-09 공개
+- OS 커맨드 인젝션, v0.0.5~0.1.15 영향, v0.1.16 수정
+- 437,000+ 다운로드
+- "최초의 실제 시나리오에서 원격 코드 실행 달성" (JFrog)
+
+### Cursor CVE-2025-54136 (MCPoison) / CVE-2025-54135 (CurXecute)
+- config swap / rug pull
+- 승인된 key name을 신뢰하고 command content를 재검증하지 않는 허점
+
+### Postmark MCP 백도어 (2025-09)
+- 유지관리자가 공식 패키지에 BCC 로직 추가로 전 메일 탈취
+- 패키지 서명이 행위를 보증하지 못함
+
+## 학술 연구
+
+### arXiv:2508.12538 "Systematic Analysis of MCP Security"
+- 배포된 1,800+ MCP 서버 조사
+- "over 30 percent had at least one exploitable vulnerability"
+
+### MCPTox 벤치 (arXiv:2508.14925, AAAI 2026)
+- 45개 실제 MCP 서버, 353개 authentic tools, 1,312개 악성 테스트케이스
+- 최고 공격성공률: o1-mini 72.8%
+- "more capable models are often more susceptible" (강한 모델이 오히려 더 취약)
+- 최강 방어 모델 Claude-3.7-Sonnet조차 거부율 3% 미만
+- "모델이 알아서 걸러줄 것"이라는 가정은 성립하지 않음
+
+## 주의사항
+- YARA 기반 MCP 스캐너에서 ~78% false positive 보고 — 원시 "X% 취약" 수치는 방법론 편차 큼.
+- rug pull 완화 연구: ETDI (서명된 JWT에 툴 정의 바인딩, 정의 변경 시 서명 무효화) 제안.
+- 절대 수치보다 통제 원칙(allowlist, 서명, audience 검증)의 채택이 핵심.

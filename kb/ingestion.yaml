@@ -1,0 +1,73 @@
+# RAG 색인 대상 정의
+#
+# 이 파일이 존재하는 이유: v2.3에서는 파생 청크(06_rag_chunks/chunks/)와 원본 전문
+# (sources/imported/)이 같은 트리에 있어, 적재 스크립트를 `**/*.md`로 걸면 같은 내용이
+# 두 번 색인됐다. 중복 히트는 검색 순위를 조용히 망가뜨리므로 대상을 명시한다.
+
+version: "3.0"
+build_date: "2026-08-05"
+
+index:
+  # 벡터 DB에 넣을 유일한 대상. 임베딩 텍스트는 embeddings.jsonl에 미리 조립돼 있다.
+  include:
+    - "chunks/*.md"
+  manifest: "manifest.jsonl"
+  embedding_input: "embeddings.jsonl"
+
+exclude:
+  # 사람이 읽는 위키 레이어. chunks/ 가 이 내용에서 파생됐으므로 색인하면 중복이다.
+  - "docs/**"
+  # 원본 리서치 전문. 출처 추적·인용 확인용으로만 보관한다.
+  - "sources/**"
+  # 청크 빌드 입력. 결과물은 chunks/ 에 이미 들어 있다.
+  - "authored/**"
+
+embedding:
+  # 기본값 근거는 chunks/v3-korean-rag.md 참조.
+  # 한국어 서술 + 영어 식별자 혼용 코퍼스이고 폐쇄망 제약이 있어 로컬 모델을 기본으로 둔다.
+  default_model: "BAAI/bge-m3"
+  dimensions: 1024
+  alternatives:
+    - model: "cohere/embed-multilingual-v3.0"
+      when: "외부 API 허용 시"
+    - model: "openai/text-embedding-3-large"
+      when: "이미 OpenAI 스택인 경우"
+
+retrieval:
+  hybrid:
+    enabled: true
+    # 본문 전체가 아니라 제목·태그·질문에만 BM25를 건다.
+    # 한국어 어미 변화 영향을 줄이고 긴 청크 편향을 막기 위함.
+    bm25_fields: ["title", "tags", "retrieval_questions"]
+    dense_weight: 0.6
+  rerank:
+    enabled: true
+    candidates: 24
+    final_k: 5
+  context_expansion:
+    # related_chunks를 따라 이웃 청크를 끌어온다. 2홉을 넘으면 정밀도가 떨어진다.
+    max_hops: 2
+  filters:
+    # confidence 필터를 열어두는 이유: 이 KB에는 자동 병합(auto-merged)과
+    # 초안(draft) 청크가 섞여 있다. 사실 확인이 필요한 질의에서는 verified만 남긴다.
+    production_default:
+      confidence: ["verified", "auto-merged"]
+    strict:
+      confidence: ["verified"]
+
+quality_gate:
+  # tools/kb_audit.py 기준. FAIL이 하나라도 있으면 적재를 막는다.
+  fail_on: ["T-03", "T-04", "T-05", "T-08"]
+  warn_only: ["T-01", "T-02", "T-06", "T-07"]
+
+review:
+  # 가격·사양은 변동이 빠르다. 분기 재검토를 강제한다.
+  cadence: "quarterly"
+  next_review: "2026-11-05"
+  early_expiry:
+    - topic: "모델 가격"
+      reason: "도입기 할인 종료 예정"
+      recheck_by: "2026-09-01"
+    - topic: "MCP 2026-07-28 RC"
+      reason: "정식화 시 stateless core 전환"
+      recheck_by: "2026-10-01"
