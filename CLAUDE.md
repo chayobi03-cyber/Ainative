@@ -44,6 +44,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
     ├── TEST-PLAN.md       # 시험법
     ├── TEST-RESULTS.md    # 시험결과
     ├── LESSONS-LEARNED.md # 제작 과정 회고
+    ├── HANDOVER.md        # 인수인계 체크리스트
     ├── RAG-AGENT-SPEC.md  # RAG 제작 에이전트 설계 기록
     └── INTERNAL-FILL-INS.md # 사내 정보 기입 요청
 ```
@@ -72,6 +73,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | 실제 적재 | `python3 tools/upload_vectors.py --target chromadb --model bge-m3 --collection ainative-v3` |
 
 청크 재빌드는 원본 v1/v2.3 입력이 필요하다(이 저장소에 없음 — Google Drive `Rawdata`).
+**이 의존은 인수인계 전 해소해야 한다** — `docs/HANDOVER.md` §A-1.
 `kb/chunks/`만 고치려면 아래 "청크 수정" 절을 따를 것.
 
 ## 규칙

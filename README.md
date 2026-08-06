@@ -19,6 +19,10 @@
 
 **구조는 검증됐고 내용은 검증되지 않았다.** 이 구분을 유지할 것.
 
+> ⚠️ **이 저장소만으로는 청크를 재빌드할 수 없다.** `tools/build_v3.py`의 입력(v1/v2.3
+> 원본 청크)이 외부 Google Drive에만 있다. 인수인계 전 반드시 해소할 것 —
+> [`docs/HANDOVER.md`](docs/HANDOVER.md) §A-1.
+
 ## 빠른 시작
 
 ```bash
@@ -82,6 +86,7 @@ v1 47개 중 32개는 주제 자체가 v2.3에 없었고, v2.3에는 `retrieval_
 | [`docs/LESSONS-LEARNED.md`](docs/LESSONS-LEARNED.md) | 제작 과정 회고 — 틀렸던 판단 기록 |
 | [`docs/RAG-AGENT-SPEC.md`](docs/RAG-AGENT-SPEC.md) | RAG 제작 에이전트 설계 기록 + 기성 도구 권장 |
 | [`docs/INTERNAL-FILL-INS.md`](docs/INTERNAL-FILL-INS.md) | 사내 정보 기입 요청 (draft 7건) |
+| [`docs/HANDOVER.md`](docs/HANDOVER.md) | **인수인계 체크리스트 — 빠뜨리기 쉬운 것** |
 | [`CLAUDE.md`](CLAUDE.md) | AI 어시스턴트 작업 규칙 |
 
 ## 다음 단계
