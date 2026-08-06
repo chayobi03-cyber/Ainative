@@ -177,14 +177,20 @@ def emit(meta: dict, body: str) -> str:
         "chunk_id", "title", "category", "section_path", "audience", "use_cases",
         "tags", "priority", "confidence", "freshness", "review_by",
         "source_documents", "source_urls", "retrieval_questions",
-        "related_chunks", "supersedes",
+        "related_chunks", "supersedes", "source_anchor", "assets",
     ]
+    # 중첩 필드는 인라인 JSON으로 싣는다(YAML flow == JSON).
+    # 최소 파서를 늘리지 않으면서 구조를 정확히 보존한다. kb/schema.md 참조.
+    NESTED = ("source_anchor", "assets")
     lines = ["---"]
     for k in order:
         v = meta.get(k)
-        if v is None or v == "" or v == []:
-            if k in ("use_cases", "source_urls", "related_chunks", "supersedes"):
+        if v is None or v == "" or v == [] or v == {}:
+            if k in ("use_cases", "source_urls", "related_chunks", "supersedes") or k in NESTED:
                 continue
+        if k in NESTED:
+            lines.append(f"{k}: {json.dumps(v, ensure_ascii=False)}")
+            continue
         if isinstance(v, list):
             lines.append(f"{k}: {yaml_list(v)}")
         else:
@@ -222,6 +228,8 @@ def convert_v1(root: Path) -> list[dict]:
                 "v3-" + RAG_ID_STRIP.sub("", r) for r in as_list(meta.get("related_chunks"))
             ],
             "supersedes": [old_id],
+            "source_anchor": {},
+            "assets": [],
             "_body": body,
             "_origin": "v1",
         }
@@ -346,6 +354,8 @@ def convert_v23(chunks_dir: Path, manifest_path: Path) -> list[dict]:
                     "retrieval_questions": qs,
                     "related_chunks": [],
                     "supersedes": [s["cid"] for s in bucket],
+                    "source_anchor": {},
+                    "assets": [],
                     "_body": "\n\n".join(body_parts),
                     "_origin": "v2.3",
                 }
@@ -385,6 +395,9 @@ def load_authored(root: Path) -> list[dict]:
                 "retrieval_questions": as_list(meta.get("retrieval_questions")),
                 "related_chunks": as_list(meta.get("related_chunks")),
                 "supersedes": [],
+                # 이미지 포함 소스가 들어오면 authored frontmatter에서 그대로 넘어온다.
+                "source_anchor": meta.get("source_anchor") if isinstance(meta.get("source_anchor"), dict) else {},
+                "assets": meta.get("assets") if isinstance(meta.get("assets"), list) else [],
                 "_body": body,
                 "_origin": "authored",
             }
@@ -480,6 +493,15 @@ def main() -> int:
         chunks += load_authored(a.authored)
     for line in apply_corrections(chunks, a.corrections):
         print(f"  정정 {line}")
+    unscreened = [
+        (c["chunk_id"], x.get("path"))
+        for c in chunks
+        for x in (c.get("assets") or [])
+        if isinstance(x, dict) and x.get("screened") is not True
+    ]
+    if unscreened:
+        # 사내 문서 이미지에는 콘솔 캡처 형태로 토큰·개인정보가 실제로 자주 들어 있다.
+        raise SystemExit(f"스크리닝 미통과 에셋이 있어 빌드를 중단합니다: {unscreened[:5]}")
     link_across(chunks)
 
     cdir = a.out / "chunks"
@@ -497,6 +519,8 @@ def main() -> int:
         rec["origin"] = origin
         rec["corrections_applied"] = corr
         rec["file_path"] = f"chunks/{c['chunk_id']}.md"
+        rec.setdefault("source_anchor", {})
+        rec.setdefault("assets", [])
         rec["tokens_est"] = estimate_tokens(body)
         manifest.append(rec)
         embeddings.append(

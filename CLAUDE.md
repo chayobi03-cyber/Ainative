@@ -22,7 +22,9 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 ├── kb/
 │   ├── chunks/            # v3.0 RAG 청크 100개 (생성물 — 직접 수정 금지)
 │   ├── authored/          # 신규 집필 청크 원본 (빌더 입력)
+│   ├── assets/            # 이미지·도표 원본 (색인 제외)
 │   ├── docs/              # 사람이 읽는 위키 22종
+│   ├── schema.md          # 청크 frontmatter 정본 스키마
 │   ├── sources/           # 원본 리서치 전문 (색인 제외, 출처 추적용)
 │   ├── corrections.yaml   # 사실 정정 원장 (1차 출처 필수)
 │   ├── manifest.jsonl     # 청크 메타데이터 (생성물)
@@ -32,9 +34,11 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── kb_audit.py        # 청크 감사 하네스 (T-01~T-08)
 │   ├── build_v3.py        # v1+v2.3+authored → v3.0 빌더
 │   ├── make_golden.py     # 검색 골든셋 생성기
-│   └── eval_retrieval.py  # BM25 검색 평가
+│   ├── eval_retrieval.py  # BM25 검색 평가
+│   └── upload_vectors.py  # 벡터 DB 적재 어댑터
 ├── tests/
 │   ├── run_checks.sh      # 품질 게이트 (CI 진입점)
+│   ├── fixtures/          # T-13 자기시험용 결함 픽스처
 │   └── golden_retrieval.jsonl
 └── docs/
     ├── TEST-PLAN.md       # 시험법
@@ -64,6 +68,8 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | 골든셋 통계 | `python3 tools/make_golden.py kb/manifest.jsonl --stats` |
 | 골든셋 생성 | `python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl` |
 | BM25 검색 평가 | `python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl --compare-modes` |
+| 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
+| 실제 적재 | `python3 tools/upload_vectors.py --target chromadb --model bge-m3 --collection ainative-v3` |
 
 청크 재빌드는 원본 v1/v2.3 입력이 필요하다(이 저장소에 없음 — Google Drive `Rawdata`).
 `kb/chunks/`만 고치려면 아래 "청크 수정" 절을 따를 것.
@@ -110,6 +116,16 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 현재 통과한 것은 **구조 시험 + 부분 검증**이다. 사실성(T-11)은 조기 만료 항목만,
 검색 성능(T-12)은 BM25 하한만 측정됐다. 문서·요약·커밋 메시지에서 이 구분을 흐리지 않는다.
 
+### 이미지·원문 앵커는 스키마 슬롯을 쓴다
+`source_anchor`(원문 좌표)와 `assets`(이미지)는 `kb/schema.md`에 정의돼 있고 현재는
+전부 비어 있다. 이미지 포함 소스가 들어오면 이 슬롯을 채운다 — 필드를 새로 추가하면
+100청크 재빌드·재임베딩이 필요하다.
+
+- 이미지를 base64로 본문에 넣지 않는다. 경로만 두고 파일은 `kb/assets/`에 둔다.
+- **`screened: true`가 아닌 에셋은 빌드가 거부한다.** 사내 캡처에는 토큰·개인정보가
+  실제로 자주 들어 있다.
+- 검색은 caption/description 텍스트로, **제시는 `source_anchor`로 원문을 불러온다.**
+
 ### 문서 작성 규칙
 - 한 문단 3~5문장. 긴 문단은 임베딩에서 의미가 희석된다.
 - 영어 식별자(`PreToolUse`, `RFC 8707`)는 **번역하지 않고 원문 그대로** 둔다.
@@ -120,7 +136,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 
 `./tests/run_checks.sh`가 CI 진입점이다. 종료 코드 0이면 적재 가능.
 
-차단 항목(FAIL): T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성, T-08 포맷
+차단 항목(FAIL): T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성, T-08 포맷, T-13 에셋 무결성
 경고 항목(WARN, 차단 안 함): T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형
 
 ## 재검토 주기

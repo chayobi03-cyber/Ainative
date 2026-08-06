@@ -12,7 +12,8 @@
 | RAG 청크 | 100개 (추정 94,985 토큰) |
 | 위키 문서 | 22종 |
 | 검색 골든셋 | 408쌍 |
-| 품질 게이트 | 5/5 통과 |
+| 품질 게이트 | 7/7 통과 |
+| 벡터 DB 적재 | 어댑터 6종 dry-run 통과 (실적재 미검증) |
 | 내용 사실성 검증 | 조기 만료 항목만 완료 (오류 1건 정정) |
 | 검색 성능 측정 | BM25 하한만 (Recall@10=0.944). dense 미실행 |
 
@@ -29,6 +30,9 @@ python3 tools/kb_audit.py kb/chunks
 
 # 검색 골든셋 통계
 python3 tools/make_golden.py kb/manifest.jsonl --stats
+
+# 벡터 DB 적재 (페이로드 검증만 — 외부 패키지 불필요)
+python3 tools/upload_vectors.py --dry-run --target chromadb
 ```
 
 Python 3.11 표준 라이브러리만 쓴다. 설치할 것이 없다.
@@ -42,6 +46,8 @@ Python 3.11 표준 라이브러리만 쓴다. 설치할 것이 없다.
 | `kb/sources/` | 원본 리서치 전문 — 출처 추적용, **색인 제외** |
 | `kb/authored/` | 신규 집필 청크 원본 (빌더 입력) |
 | `kb/ingestion.yaml` | 색인 대상·임베딩·검색 파이프라인 설정 |
+| `kb/schema.md` | 청크 frontmatter 정본 스키마 (`source_anchor`/`assets` 포함) |
+| `kb/assets/` | 이미지·도표 원본 — 색인 제외, 제시 단계에서 사용 |
 | `tools/` | 감사 하네스, 빌더, 골든셋 생성기 |
 | `docs/` | 시험법 / 시험결과 / 제작 회고 |
 
@@ -81,7 +87,8 @@ v1 47개 중 32개는 주제 자체가 v2.3에 없었고, v2.3에는 `retrieval_
 ## 다음 단계
 
 1. `docs/INTERNAL-FILL-INS.md`의 사내 정보 기입 (비용 기준선 2주 실측이 최장 리드타임)
-2. 벡터 DB 적재 후 dense/hybrid 평가 — BM25 하한 Recall@10=0.944 대비
+2. 벡터 DB 실적재 후 dense/hybrid 평가 — BM25 하한 Recall@10=0.944 대비
+   (`tools/upload_vectors.py`가 준비돼 있고 dry-run은 통과. 실적재는 미검증)
 3. 실제 사용자 질의 30건 수집 → held-out 평가셋
 4. 골든셋 복수 정답 허용 전환 (단일 라벨 편향 제거)
 5. FAQ·체크리스트 질문 단위 분할 (어트랙터 완화)

@@ -45,10 +45,22 @@ for d in ('kb/docs', 'kb/sources', 'kb/authored'):
 assert not list(pathlib.Path('kb/chunks').glob('**/sources/*')), "chunks 안에 원본 혼입"
 PY
 
-# 4. 골든셋 생성 가능 여부
+# 4. T-13이 실제로 결함을 잡는지 자기시험.
+#    한 번도 발화한 적 없는 검사는 작동을 보장하지 않는다. 픽스처는 4종 결함을
+#    일부러 담고 있으며, 감사가 FAIL(exit 1)을 내야 이 단계가 통과한다.
+run "T-13 자기시험(픽스처가 FAIL을 유발)" bash -c \
+  '! python3 tools/kb_audit.py tests/fixtures/t13_broken/chunks --repo-root . --quiet'
+
+# 5. 벡터 DB 페이로드 검증 — 외부 패키지 없이 도는 부분만
+run "업로드 어댑터 dry-run (6개 타깃)" bash -c \
+  'for t in chromadb pinecone qdrant weaviate faiss jsonl; do
+     python3 tools/upload_vectors.py --dry-run --target "$t" >/dev/null || exit 1
+   done'
+
+# 6. 골든셋 생성 가능 여부
 run "골든셋 생성" python3 tools/make_golden.py kb/manifest.jsonl --stats
 
-# 5. 도구 스크립트 문법
+# 7. 도구 스크립트 문법
 run "tools/*.py 컴파일" python3 -m compileall -q tools
 
 echo

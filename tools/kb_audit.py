@@ -82,6 +82,14 @@ def parse_simple_yaml(text: str) -> dict:
         if not m:
             continue
         key, val = m.group(1), m.group(2).strip()
+        # source_anchor / assets 는 중첩 구조라 인라인 JSON으로 싣는다.
+        # YAML flow 스타일이 곧 JSON이라 파서를 늘리지 않고 정확히 읽을 수 있다.
+        if val.startswith("{") or val.startswith("[{"):
+            try:
+                out[key] = json.loads(val)
+                continue
+            except ValueError:
+                pass
         out[key] = _list(val) if val.startswith("[") else (_scalar(val) if val else [])
     return out
 
@@ -360,6 +368,73 @@ def t08_format(chunks):
     }
 
 
+def t13_assets(chunks: list[Chunk], repo_root: Path, assets_dir: Path):
+    """에셋·원문 앵커 무결성.
+
+    현재 청크는 전부 텍스트 소스 유래라 에셋이 0개다. 그래도 지금 넣어 두는 이유는,
+    이미지 소스가 들어온 뒤에 검사를 붙이면 이미 깨진 참조가 섞인 상태에서 시작하기
+    때문이다. 검사가 먼저 있어야 처음부터 깨끗하다.
+
+    검사 항목은 kb/schema.md의 T-13 절과 일치한다.
+    """
+    broken, missing_meta, unscreened, bad_anchor = [], [], [], []
+    referenced: set[str] = set()
+    total_assets = 0
+
+    for c in chunks:
+        for a in c.meta.get("assets") or []:
+            if not isinstance(a, dict):
+                missing_meta.append({"chunk_id": c.chunk_id, "issue": "assets 항목이 객체가 아님"})
+                continue
+            total_assets += 1
+            path = str(a.get("path") or "")
+            if not path:
+                missing_meta.append({"chunk_id": c.chunk_id, "issue": "path 누락"})
+                continue
+            referenced.add(path)
+            if Path(path).is_absolute():
+                broken.append({"chunk_id": c.chunk_id, "path": path, "issue": "절대경로"})
+            elif not (repo_root / path).exists():
+                broken.append({"chunk_id": c.chunk_id, "path": path, "issue": "파일 없음"})
+            for f in ("caption", "description_by"):
+                if not str(a.get(f) or "").strip():
+                    missing_meta.append({"chunk_id": c.chunk_id, "path": path, "issue": f"{f} 누락"})
+            if a.get("screened") is not True:
+                unscreened.append({"chunk_id": c.chunk_id, "path": path})
+
+        anchor = c.meta.get("source_anchor")
+        if isinstance(anchor, dict) and anchor:
+            f = str(anchor.get("file") or "")
+            if not f:
+                bad_anchor.append({"chunk_id": c.chunk_id, "issue": "file 누락"})
+            elif Path(f).is_absolute():
+                bad_anchor.append({"chunk_id": c.chunk_id, "file": f, "issue": "절대경로"})
+            elif not (repo_root / f).exists():
+                bad_anchor.append({"chunk_id": c.chunk_id, "file": f, "issue": "파일 없음"})
+
+    orphans = []
+    if assets_dir.is_dir():
+        for p in sorted(assets_dir.rglob("*")):
+            if not p.is_file() or p.name.lower() in ("readme.md", ".gitkeep"):
+                continue
+            rel = str(p.relative_to(repo_root))
+            if rel not in referenced:
+                orphans.append(rel)
+
+    fail = bool(broken or missing_meta or unscreened or bad_anchor)
+    return {
+        "id": "T-13",
+        "name": "에셋·원문 앵커 무결성",
+        "assets_declared": total_assets,
+        "broken_paths": {"count": len(broken), "samples": broken[:10]},
+        "missing_metadata": {"count": len(missing_meta), "samples": missing_meta[:10]},
+        "unscreened": {"count": len(unscreened), "samples": unscreened[:10]},
+        "bad_source_anchor": {"count": len(bad_anchor), "samples": bad_anchor[:10]},
+        "orphan_assets": {"count": len(orphans), "samples": orphans[:10]},
+        "verdict": "FAIL" if fail else ("WARN" if orphans else "PASS"),
+    }
+
+
 def cross_set_overlap(a: list[Chunk], b: list[Chunk], threshold=0.30):
     matches = []
     for ca in a:
@@ -383,8 +458,10 @@ def cross_set_overlap(a: list[Chunk], b: list[Chunk], threshold=0.30):
     }
 
 
-def run(root: Path, compare: Path | None = None) -> dict:
+def run(root: Path, compare: Path | None = None, repo_root: Path | None = None) -> dict:
     chunks = load_chunks(root)
+    # 에셋 경로는 저장소 루트 기준 상대경로다. 기본값은 kb/chunks 의 두 단계 위.
+    root_for_assets = repo_root or root.resolve().parent.parent
     if not chunks:
         raise SystemExit(f"청크를 찾지 못했습니다: {root}")
     results = [
@@ -396,6 +473,7 @@ def run(root: Path, compare: Path | None = None) -> dict:
         t06_duplication(chunks),
         t07_category_balance(chunks),
         t08_format(chunks),
+        t13_assets(chunks, root_for_assets, root_for_assets / "kb" / "assets"),
     ]
     report = {
         "source": str(root),
@@ -415,10 +493,11 @@ def main() -> int:
     ap.add_argument("root", type=Path)
     ap.add_argument("--compare", type=Path, default=None)
     ap.add_argument("--json", type=Path, default=None)
+    ap.add_argument("--repo-root", type=Path, default=None)
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
 
-    rep = run(a.root, a.compare)
+    rep = run(a.root, a.compare, a.repo_root)
     if a.json:
         a.json.parent.mkdir(parents=True, exist_ok=True)
         a.json.write_text(json.dumps(rep, ensure_ascii=False, indent=2), encoding="utf-8")

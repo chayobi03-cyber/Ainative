@@ -21,6 +21,9 @@ exclude:
   - "sources/**"
   # 청크 빌드 입력. 결과물은 chunks/ 에 이미 들어 있다.
   - "authored/**"
+  # 이미지·도표 원본. 검색은 청크의 caption/description 텍스트로 하고,
+  # 이 파일들은 답변 제시 단계에서 source_anchor/assets 경로로 불러온다.
+  - "assets/**"
 
 embedding:
   # 기본값 근거는 chunks/v3-korean-rag.md 참조.
@@ -55,9 +58,23 @@ retrieval:
     strict:
       confidence: ["verified"]
 
+assets:
+  # 이미지 포함 소스 대비. 현재 선언된 에셋은 0건이며 슬롯만 정의돼 있다.
+  # 스키마 상세는 kb/schema.md 참조.
+  root: "assets/"
+  require_screening: true      # screened != true 이면 빌드가 중단된다
+  require_caption: true
+  # VLM 생성 설명은 자동 생성물이다. 사람 검수 전까지 청크 confidence를
+  # verified 로 올리지 않는다.
+  vlm_description_confidence: "auto-generated"
+  # 검색은 텍스트로, 제시는 원문으로. source_anchor 가 그 좌표다.
+  presentation:
+    resolve_via: "source_anchor"
+    pass_image_to_model: true
+
 quality_gate:
   # tools/kb_audit.py 기준. FAIL이 하나라도 있으면 적재를 막는다.
-  fail_on: ["T-03", "T-04", "T-05", "T-08"]
+  fail_on: ["T-03", "T-04", "T-05", "T-08", "T-13"]
   warn_only: ["T-01", "T-02", "T-06", "T-07"]
 
 review:

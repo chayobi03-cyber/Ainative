@@ -6,7 +6,7 @@
 | 시험 계획 | [`docs/TEST-PLAN.md`](TEST-PLAN.md) |
 | 대상 | v1 (47청크) / v2.3 (135청크) / **v3.0 (100청크)** |
 | 실행 명령 | `python3 tools/kb_audit.py <dir>`, `./tests/run_checks.sh` |
-| 최종 판정 | **적재 가능** (품질 게이트 5/5 통과) |
+| 최종 판정 | **적재 가능** (품질 게이트 7/7 통과) |
 
 ---
 
@@ -22,6 +22,7 @@
 | T-06 중복 | PASS | **WARN** | **PASS** |
 | T-07 카테고리 균형 | PASS | **WARN** | **PASS** |
 | T-08 포맷 | PASS | PASS | PASS |
+| T-13 에셋 무결성 | — | — | **PASS** (선언 0건, 픽스처로 작동 증명) |
 
 v3.0은 FAIL 0건. 남은 WARN은 T-01 하나이며 사유는 §3에 기록했다.
 
@@ -357,11 +358,68 @@ top-1을 뺏는다.
 
 ---
 
-## 10. 다음 조치
+## 10. 스키마 슬롯·T-13·업로드 어댑터 (2026-08-05 추가)
+
+이미지 포함 소스가 나중에 들어올 것에 대비해 슬롯을 미리 열었다. **지금 넣는 비용은
+0이고, 나중에 필드를 추가하면 100청크 재빌드·재임베딩이 필요하다.**
+
+### 스키마 슬롯
+`source_anchor`(원문 좌표)와 `assets`(이미지)를 정본 스키마에 추가했다(`kb/schema.md`).
+중첩 구조라 인라인 JSON으로 싣는다 — YAML flow 스타일이 곧 JSON이라 최소 파서를
+늘리지 않고 정확히 읽힌다. 현재 100청크 전부 빈 값이며 매니페스트에는 안정적 키로
+항상 실린다(다운스트림 코드가 `KeyError`를 안 만나게).
+
+설계 원칙: **검색은 텍스트로, 제시는 원문으로.** 검색은 청크의 caption/description
+텍스트로 하고, 답변 시점에 `source_anchor`로 원본 페이지·이미지를 불러온다.
+
+### T-13 — 그리고 그 자기시험
+검사 항목: 깨진 에셋 경로, `caption`/`description_by` 누락, `screened != true`,
+`source_anchor.file` 부재·절대경로, 고아 에셋.
+
+선언된 에셋이 0건이라 T-13은 그냥 PASS한다. **한 번도 발화한 적 없는 검사는 작동을
+보장하지 않으므로**, 4종 결함을 일부러 담은 픽스처(`tests/fixtures/t13_broken/`)를
+만들고 감사가 FAIL을 내는지 게이트에서 확인한다.
+
+```
+$ python3 tools/kb_audit.py tests/fixtures/t13_broken/chunks --repo-root .
+  T-13 FAIL  에셋·원문 앵커 무결성
+    broken_paths     1  (kb/assets/없는파일.png — 파일 없음)
+    missing_metadata 1  (caption 누락)
+    unscreened       1
+    bad_source_anchor 1  (/etc/passwd — 절대경로)
+```
+
+빌더에도 게이트를 넣었다 — `screened != true`인 에셋이 있으면 **빌드 자체가 중단**된다.
+사내 문서 이미지에는 콘솔 캡처 형태로 토큰·개인정보가 실제로 자주 들어 있다.
+
+### 업로드 어댑터
+v2.3 스크립트 6종은 형식이 달라(JSON 배열 vs JSONL, 평면 vs 중첩) 그대로는 못 쓴다.
+더 중요한 건 **벡터 DB마다 메타데이터 타입 제약이 다르다**는 점이다.
+
+| 타깃 | 리스트 | 중첩 객체 | 어댑터 처리 |
+|---|---|---|---|
+| ChromaDB | ✗ | ✗ | 리스트 → 쉼표 결합 |
+| Pinecone | ✅ | ✗ | 중첩 → JSON 문자열 |
+| Weaviate | ✅ | ✗ | 중첩 → JSON 문자열 |
+| Qdrant / FAISS / JSONL | ✅ | ✅ | 그대로 |
+
+평탄화가 no-op이 아님을 확인했다:
+
+```
+[chromadb] tags = 'Skills, SKILL.md, progressive-disclosure, frontmatter, agentskills.io'
+[qdrant]   tags = ['Skills', 'SKILL.md', 'progressive-disclosure', ...]
+```
+
+`--dry-run`은 외부 패키지 없이 돌아 CI에서 6개 타깃 전부 검증한다.
+**실제 임베딩 생성과 DB 적재는 클라이언트 패키지가 없어 실행하지 못했다.**
+
+---
+
+## 11. 다음 조치
 
 | 우선순위 | 항목 |
 |---|---|
-| 1 | 벡터 DB 적재 후 dense/hybrid T-12 실행 (BM25 하한 Recall@10=0.944 대비 개선 확인) |
+| 1 | 벡터 DB **실적재** 후 dense/hybrid T-12 실행 (어댑터 준비됨, dry-run만 검증) |
 | 2 | 실제 사용자 질의 30건 수집 → held-out 세트 구성 |
 | 3 | 골든셋을 복수 정답 허용으로 전환 (단일 라벨 편향 제거) |
 | 4 | FAQ·체크리스트를 질문 단위 청크로 분할 (어트랙터 완화) |
