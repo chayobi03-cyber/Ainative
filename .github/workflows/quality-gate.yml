@@ -1,0 +1,39 @@
+# 품질 게이트 CI
+#
+# 이 저장소의 도구는 Python 표준 라이브러리만 쓴다. 설치 단계도 캐시도 없다.
+# 사내 CI가 GitHub Actions가 아니면 이 파일을 지우고 `ci/gate.sh` 를 쓰면 된다
+# (GitLab / Jenkins / Azure DevOps 예시는 ci/README.md).
+
+name: quality-gate
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  # 재검토 기한을 놓치지 않도록 주 1회 돈다. 만료 임박 항목을 경고한다.
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 품질 게이트
+        run: ./ci/gate.sh
+
+      - name: 감사 리포트 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kb-audit-report
+          path: |
+            out/audit.json
+            out/retrieval.json
+          if-no-files-found: warn

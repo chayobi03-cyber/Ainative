@@ -1,0 +1,47 @@
+# 담당자 지정
+#
+# 담당자가 없는 지식 베이스는 6개월이면 썩는다. 이 파일은 **인수인계 시 채우는 것**이며
+# 값이 비어 있어도 빌드나 게이트는 막지 않는다 — 다만 게이트가 매번 경고한다.
+#
+# 사내 조직 형태가 어떻든 맞출 수 있도록 자유 문자열로 둔다. 이름·이메일·슬랙 핸들·
+# 팀 별칭 무엇이든 그 조직에서 사람을 특정할 수 있으면 된다.
+#
+# 확인:  python3 tools/check_owners.py
+
+version: 1
+
+roles:
+  # 청크 내용·정정 원장·재검토 주기를 책임진다.
+  # kb/corrections.yaml 갱신과 분기 재검토가 이 사람 몫이다.
+  kb_owner:
+    name: ""              # 예: "홍길동" / "플랫폼팀" / "@gildong"
+    contact: ""           # 예: 이메일, 슬랙 채널
+    backup: ""            # 부재 시 대리
+
+  # 검색 앱·벡터 DB·평가 지표를 책임진다.
+  # confidence 필터가 실제로 걸려 있는지 보증하는 것이 핵심 책무다.
+  retrieval_owner:
+    name: ""
+    contact: ""
+    backup: ""
+
+  # 위 둘이 같은 사람이어도 된다. 다만 **명시**할 것.
+  # 비워두면 "아무도 안 본다"와 구분되지 않는다.
+
+# 승인이 필요한 변경. 사내 절차에 맞춰 자유롭게 고친다.
+approvals:
+  # 청크 내용 변경 중 사실 정정
+  fact_correction: "kb_owner"
+  # 임베딩 모델·벡터 DB 교체 (재임베딩을 유발한다)
+  embedding_change: "retrieval_owner"
+  # 스키마 변경 (전량 재빌드를 유발한다)
+  schema_change: "kb_owner + retrieval_owner"
+
+# 재검토 담당. 날짜 정본은 kb/ingestion.yaml 의 review 절이다.
+review_assignments:
+  model_pricing: ""       # 2026-09-01 기한
+  quarterly_full: ""      # 2026-11-05 기한
+
+notes: |
+  이 파일을 채운 뒤 tools/make_calendar.py 로 재검토 일정을 캘린더에 등록할 것.
+  YAML 필드는 알림을 보내지 않는다.

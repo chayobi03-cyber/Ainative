@@ -21,6 +21,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 ├── CLAUDE.md
 ├── kb/
 │   ├── chunks/            # v3.0 RAG 청크 100개 (생성물 — 직접 수정 금지)
+│   ├── _inputs/           # 빌더 입력 v1/v2.3 원본 (색인 제외)
 │   ├── authored/          # 신규 집필 청크 원본 (빌더 입력)
 │   ├── assets/            # 이미지·도표 원본 (색인 제외)
 │   ├── docs/              # 사람이 읽는 위키 22종
@@ -35,7 +36,13 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── build_v3.py        # v1+v2.3+authored → v3.0 빌더
 │   ├── make_golden.py     # 검색 골든셋 생성기
 │   ├── eval_retrieval.py  # BM25 검색 평가
-│   └── upload_vectors.py  # 벡터 DB 적재 어댑터
+│   ├── upload_vectors.py  # 벡터 DB 적재 어댑터
+│   ├── check_owners.py    # 담당자 지정 점검
+│   └── make_calendar.py   # 재검토 일정 → .ics
+├── OWNERS.yaml            # 담당자 지정 (인수인계 시 기입)
+├── ci/
+│   ├── gate.sh            # CI 진입점 (어떤 CI에서든 이것만 호출)
+│   └── README.md          # GitLab/Jenkins/Azure 연동 예시
 ├── tests/
 │   ├── run_checks.sh      # 품질 게이트 (CI 진입점)
 │   ├── fixtures/          # T-13 자기시험용 결함 픽스처
@@ -71,10 +78,18 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | BM25 검색 평가 | `python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl --compare-modes` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
 | 실제 적재 | `python3 tools/upload_vectors.py --target chromadb --model bge-m3 --collection ainative-v3` |
+| CI 게이트 | `./ci/gate.sh` |
+| 담당자 점검 | `python3 tools/check_owners.py` |
+| 재검토 일정 .ics | `python3 tools/make_calendar.py --out ainative-review.ics` |
 
-청크 재빌드는 원본 v1/v2.3 입력이 필요하다(이 저장소에 없음 — Google Drive `Rawdata`).
-**이 의존은 인수인계 전 해소해야 한다** — `docs/HANDOVER.md` §A-1.
-`kb/chunks/`만 고치려면 아래 "청크 수정" 절을 따를 것.
+청크 재빌드는 `kb/_inputs/`의 v1/v2.3 원본을 쓴다. **저장소만으로 완결된다.**
+
+```bash
+python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
+  --v23-chunks kb/_inputs/v23/chunks \
+  --v23-manifest kb/_inputs/v23/chunk-manifest.jsonl \
+  --authored kb/authored --out kb
+```
 
 ## 규칙
 

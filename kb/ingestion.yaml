@@ -21,6 +21,8 @@ exclude:
   - "sources/**"
   # 청크 빌드 입력. 결과물은 chunks/ 에 이미 들어 있다.
   - "authored/**"
+  # 빌더 입력(구 스키마 원본 청크). v3 청크와 같은 내용이라 넣으면 이중 색인이다.
+  - "_inputs/**"
   # 이미지·도표 원본. 검색은 청크의 caption/description 텍스트로 하고,
   # 이 파일들은 답변 제시 단계에서 source_anchor/assets 경로로 불러온다.
   - "assets/**"

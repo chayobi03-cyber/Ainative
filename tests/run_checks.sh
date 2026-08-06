@@ -45,22 +45,33 @@ for d in ('kb/docs', 'kb/sources', 'kb/authored'):
 assert not list(pathlib.Path('kb/chunks').glob('**/sources/*')), "chunks 안에 원본 혼입"
 PY
 
-# 4. T-13이 실제로 결함을 잡는지 자기시험.
+# 4. 자족성 — 빌더 입력이 저장소 안에 있는가.
+#    없으면 청크를 영영 재빌드할 수 없다(docs/HANDOVER.md §A-1).
+run "빌더 입력 자족성" python3 - <<'SELFCHK'
+import pathlib
+need = ["kb/_inputs/v1/rag_chunks", "kb/_inputs/v23/chunks", "kb/_inputs/v23/chunk-manifest.jsonl"]
+for n in need:
+    assert pathlib.Path(n).exists(), f"빌더 입력 없음: {n} — 저장소만으로 재빌드 불가"
+assert len(list(pathlib.Path("kb/_inputs/v1/rag_chunks").glob("*.md"))) == 47, "v1 입력 개수 불일치"
+assert len(list(pathlib.Path("kb/_inputs/v23/chunks").glob("*.md"))) == 135, "v2.3 입력 개수 불일치"
+SELFCHK
+
+# 5. T-13이 실제로 결함을 잡는지 자기시험.
 #    한 번도 발화한 적 없는 검사는 작동을 보장하지 않는다. 픽스처는 4종 결함을
 #    일부러 담고 있으며, 감사가 FAIL(exit 1)을 내야 이 단계가 통과한다.
 run "T-13 자기시험(픽스처가 FAIL을 유발)" bash -c \
   '! python3 tools/kb_audit.py tests/fixtures/t13_broken/chunks --repo-root . --quiet'
 
-# 5. 벡터 DB 페이로드 검증 — 외부 패키지 없이 도는 부분만
+# 6. 벡터 DB 페이로드 검증 — 외부 패키지 없이 도는 부분만
 run "업로드 어댑터 dry-run (6개 타깃)" bash -c \
   'for t in chromadb pinecone qdrant weaviate faiss jsonl; do
      python3 tools/upload_vectors.py --dry-run --target "$t" >/dev/null || exit 1
    done'
 
-# 6. 골든셋 생성 가능 여부
+# 7. 골든셋 생성 가능 여부
 run "골든셋 생성" python3 tools/make_golden.py kb/manifest.jsonl --stats
 
-# 7. 도구 스크립트 문법
+# 8. 도구 스크립트 문법
 run "tools/*.py 컴파일" python3 -m compileall -q tools
 
 echo
