@@ -83,19 +83,30 @@ filters:
 
 ### B-2. 골든셋 순환 참조 — 신입이 반드시 밟는다
 
-`tools/eval_retrieval.py`를 기본값으로 돌리면 **Recall@10 = 1.000**이 나온다.
-이건 성능이 아니라 누출이다. 질문을 색인에 넣고 그 질문으로 찾은 것이다.
+`retrieval_questions`를 색인에 넣어 두고 그 질문으로 평가하면 **Recall@10 = 1.000**이
+나온다. 성능이 아니라 누출이다.
+
+도구가 이제 이것을 **실측으로 막는다** — 질의가 정답 문서에 축자적으로 등장하는 비율을
+재고 10%를 넘으면 실행을 거부한다(실측: `fields` 100.0%, `body` 0.0%).
+기본 `--mode`도 `body`로 바뀌었다. 그래도 `--allow-leakage`가 있으므로 원칙은 알아야 한다.
 
 ```bash
-# 이 수치는 의미 없다
-python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl
+# 자동 골든셋은 본문 전용만 유효
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl --mode body
 
-# 유효한 수치는 이것뿐
-python3 tools/eval_retrieval.py ... --mode body     # Recall@10 = 0.944
+# 융합·재순위를 재려면 held-out 세트를 쓴다 (질문이 색인에 없다)
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --heldout tests/heldout_queries.jsonl --views body,fields,index --fuse rrf
 ```
 
+**성능 보고서에 쓸 수치는 held-out 쪽이다.** 자동 세트는 회귀 탐지용이고,
+그 Recall@10 0.957은 "청크가 자기 질문으로 찾아지는가"를 잴 뿐이다.
+같은 코퍼스에서 held-out Recall@10은 **0.475**다(`docs/TEST-RESULTS.md` §12.2).
+
 - [ ] 인수인계 구두 설명에 이 항목 포함. 문서만으로는 안 읽는다
-- [ ] 성능 보고서에 `--mode body` 수치만 쓸 것
+- [ ] 성능 보고서에 자동 세트 수치를 단독으로 쓰지 말 것
+- [ ] held-out 40건이 **AI가 지어낸 질의**임을 함께 밝힐 것. 실제 로그 수집이 1순위 조치다
 
 ### B-3. 두 개의 "역논리" 장치 — 선의로 망가뜨리기 쉽다
 
@@ -197,7 +208,7 @@ python3 tools/eval_retrieval.py ... --mode body     # Recall@10 = 0.944
 한 번도 실행되지 않았다.** 클라이언트 패키지가 제작 환경에 없었다.
 
 - [ ] 스테이징에서 1회 실적재 후 결과 확인
-- [ ] 임베딩 비용 확인 (100청크는 저렴하나 재임베딩 빈도가 관건)
+- [ ] 임베딩 비용 확인 (101청크는 저렴하나 재임베딩 빈도가 관건)
 
 ---
 
@@ -209,7 +220,7 @@ python3 tools/eval_retrieval.py ... --mode body     # Recall@10 = 0.944
    나간다. 지금 배포 가능한 건 88개(`verified` 42 + `auto-merged` 46)다. (B-1)
 2. **"검색 평가는 `--mode body`로만 해라."** 기본값은 1.000이 나오는데 가짜다. (B-2)
 3. **"픽스처 테스트는 실패해야 정상이고, 정정 원장은 다 반영되면 빌드가 깨진다."** 설계다. (B-3)
-4. **"구조는 검증됐고 내용은 아니다."** 100청크의 인용 수치는 사실 대조를 거치지
+4. **"구조는 검증됐고 내용은 아니다."** 101청크의 인용 수치는 사실 대조를 거치지
    않았다. 조기 만료 항목만 확인했고 거기서 오류 1건이 나왔다. (`TEST-RESULTS.md` §9)
 
 ---

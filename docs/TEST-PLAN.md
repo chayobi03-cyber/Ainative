@@ -70,7 +70,16 @@ tokens ≈ 1.45·(한글 음절 수)
 | **T-09** | 세트 간 주제 중복 | (비교용, 판정 없음) `--compare` 지정 시 | INFO |
 | **T-10** | 병합 보존 불변식 | 입력 조각이 출력에 정확히 1회씩 등장 | **FAIL** |
 | **T-11** | 내용 사실성 | 사람 검토 — 자동화 대상 아님 | 수동 |
+| **T-12** | 검색 품질 | §3 참조 | 세트별 |
 | **T-13** | 에셋·원문 앵커 무결성 | 깨진 경로·메타데이터 누락·미스크리닝 0건 | **FAIL** |
+| **T-14** | 검색 회귀 | 기준선 대비 nDCG@10·Recall@10 낙폭이 허용치 이내 | **FAIL** |
+| **T-15** | 어트랙터 | 다주제 청크의 top-1 탈취 횟수 (임계 없음, 추이 관찰) | WARN |
+| **T-16** | 재검토 기한 | `review_by`·`recheck_by` 초과 후 유예 14일까지 WARN, 이후 차단 | **FAIL** |
+| **T-17** | 에이전트 표면 | SKILL.md 규격 준수 + 라우팅 색인이 manifest와 동기 | **FAIL** |
+| **T-18** | 게이트 자기시험 | 차단 검사 5종이 각자의 결함 픽스처에서 정확히 발화 | **FAIL** |
+
+T-14 이후는 `kb_audit.py`가 아니라 각 전용 도구가 판정한다
+(`eval_retrieval.py`, `check_freshness.py`, `check_agent_surface.py`, `check_gate_selftest.py`).
 
 필수 필드: `chunk_id`, `title`, `category`, `tags`, `retrieval_questions`
 권장 필드: `priority`, `confidence`, `freshness`, `related_chunks`, `audience`
@@ -109,35 +118,90 @@ LLM judge로 대체하면 "그럴듯하지만 틀린" 판정을 얻는다. 분�
 
 ---
 
-## 3. 검색 품질 시험 (T-12, 벡터 DB 적재 후)
+## 3. 검색 품질 시험 (T-12)
 
-적재 전에는 실행할 수 없으므로 절차만 정의한다.
+**세트마다 유효한 측정 조건이 다르다.** 이 절의 요점은 지표 목록이 아니라
+"어느 수치를 믿을 수 있는가"의 규칙이다.
 
-### 골든셋
+### 3.1 질의 세트 3종
+
+| 세트 | 파일 | 무엇을 재는가 | 유효한 뷰 |
+|---|---|---|---|
+| 자동 qrels | `tests/qrels_auto.jsonl` (+ `qrels_adjudicated.jsonl`) | 청크가 **자기 질문으로 찾아지는가** — 회귀 탐지용 | `body`만 |
+| held-out | `tests/heldout_queries.jsonl` | **실제에 가까운 질의**에서의 성능 | 전부 |
+| 음성 질의 | `tests/negative_queries.jsonl` | 범위 밖 질의에 답해버리는 정도 | 전부 |
+
 ```bash
-python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl
+python3 tools/make_golden.py kb/manifest.jsonl --format qrels > tests/qrels_auto.jsonl
 ```
-각 청크의 `retrieval_questions`가 (질의, 정답 청크) 쌍이 된다.
 
-**출처별로 나누어 집계할 것.** 생성기가 `question_origin`을 남긴다.
+자동 세트는 `retrieval_questions`에서 나온다. 등급 3(정답)은 자동으로 얻어지지만
+**등급 2(부분 정답)는 자동 판정이 불가능하다** — `tests/qrels_adjudicated.jsonl`에
+판정 ID·날짜·판정자·근거·증거 위치와 함께 사람이 적는다. 두 파일을 순서대로 넘기면
+뒤 파일이 앞을 덮어쓴다.
+
+**출처별로 나누어 집계할 것.** 생성기가 `question_origin`을, held-out은 `origin`을 남긴다.
 
 | 출처 | 성격 | 해석 |
 |---|---|---|
-| `v1` | 사람이 작성 | 신뢰도 높음. 주 지표로 사용 |
+| `v1` | 사람이 작성 | 신뢰도 높음 |
 | `v2.3` | 섹션 템플릿에서 기계 생성 | 본문 어휘와 겹쳐 **점수가 낙관적** |
 | `authored` | 갭 청크 집필 시 작성 | 사람 작성이나 표본이 적음 |
+| `llm-authored` | held-out — **AI가 지어낸 질의** | 실제 질의 분포와의 차이가 미측정 |
+| `user-log` | held-out — 실제 사용자 로그 | **현재 0건.** `docs/INTERNAL-FILL-INS.md` §8 |
 
-### 지표와 목표
+`llm-authored`와 `user-log`의 점수를 합산하지 않는다. 두 점수의 격차 자체가
+"AI가 지어낸 질의가 실제와 얼마나 다른가"의 측정치다.
+
+### 3.2 누출 — 이 시험의 핵심 함정
+
+`retrieval_questions`로 만든 자동 세트를 그 질문이 색인된 뷰(`fields`)로 평가하면
+정답을 색인해 두고 찾는 것이다. 실측 Recall@10 = 1.000이 나오며 **아무것도 측정하지 않는다.**
+
+`eval_retrieval.py`는 이것을 뷰 이름으로 막지 않고 **실측한다** — 질의가 정답 문서의
+뷰 텍스트에 축자적으로 등장하는 비율을 재고 10%를 넘으면 실행을 거부한다.
+실측 누출률: `fields` 100.0%, `body` 0.0%, `ngram` 0.0%.
+
+held-out 질의는 `retrieval_questions`에 없으므로 **모든 뷰가 유효하다.**
+융합·재순위·그래프 확장을 고르는 실험은 held-out에서만 한다.
+
+### 3.3 지표
+
 | 지표 | 목표 | 비고 |
 |---|---|---|
-| Recall@10 | ≥ 0.90 | 정답이 후보에 드는가 |
-| MRR@10 | ≥ 0.70 | 정답이 위에 오는가 |
-| 검색 실패율 | ≤ 3% | 관련 청크 0개 |
+| nDCG@10 | — | 등급 relevance 반영. 복수 정답이 생긴 뒤로는 이것이 주 지표다 |
+| Recall@10 | ≥ 0.90 (자동 세트) | 정답 중 상위 10에 든 비율 |
+| Success@10 | — | 정답이 **하나라도** 들었는가. 단일 정답이면 Recall과 같다 |
+| MRR@10 | ≥ 0.70 (자동 세트) | 정답이 위에 오는가 |
+| 검색 실패율 | ≤ 3% (자동 세트) | 정답이 상위 10에 하나도 없음 |
+| 분리도 AUC | — | 음성 질의. 0.5면 점수에 신호 없음 |
 
-### 필수 보완 — held-out 세트
-자동 생성 골든셋만으로 판단하면 **자기 어휘로 자기를 찾는 시험**이 된다.
-실제 사용자 질의 로그를 30건 이상 모아 별도 세트로 병행 측정하고, 두 점수의 격차를 본다.
-격차가 크면 `retrieval_questions`가 실제 질의 분포와 어긋난 것이다.
+**목표치는 자동 세트 기준이다.** held-out에는 목표를 걸지 않는다 — 기준선이 없는
+상태에서 목표를 정하면 그 숫자가 근거 없는 압력이 된다. 대신 T-14가 기준선 대비
+낙폭만 본다.
+
+### 3.4 dense 검색 — 의존성 없이 재는 법
+
+dense는 임베딩 모델과 벡터 DB가 필요해 `tools/`에 넣지 않는다. 대신 **외부에서 만든
+순위 파일을 받는다.**
+
+```jsonl
+{"query": "...", "ranking": ["v3-hooks", "v3-04-mcp-01", ...], "model": "bge-m3"}
+```
+
+절차:
+1. `tools/upload_vectors.py`로 벡터 DB에 적재한다
+2. 위 세 세트의 질의를 그대로 던져 상위 24개 `chunk_id`를 이 형식으로 덤프한다
+3. 표준 라이브러리 평가기가 BM25와 RRF 융합해 **실제 하이브리드 수치**를 낸다
+
+```bash
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --heldout tests/heldout_queries.jsonl --dense-runs runs.jsonl \
+  --views body,fields,index,dense --fuse rrf
+```
+
+이것이 T-12의 나머지 절반을 여는 경로이며, `docs/EMBEDDING-SELECTION.md`의 모델 선정
+절차도 같은 수단을 쓴다.
 
 ---
 
@@ -150,15 +214,35 @@ python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl
 | 단계 | 내용 | 차단 여부 |
 |---|---|---|
 | 1 | T-01~T-08, T-13 감사 | T-03/04/05/08/13 FAIL 시 차단 |
-| 2 | 매니페스트 ↔ 청크 파일 ↔ 임베딩 3자 정합 | 차단 |
-| 3 | ingestion exclude 경로 실재 확인 | 차단 |
-| 4 | **T-13 자기시험** — 픽스처가 FAIL을 유발하는가 | 차단 |
-| 5 | **업로드 어댑터 dry-run** (6개 타깃 페이로드 검증) | 차단 |
-| 6 | 골든셋 생성 가능 | 차단 |
-| 7 | `tools/*.py` 컴파일 | 차단 |
+| 2 | 저장소 정합성 5종 (`check_consistency.py`) | 차단 |
+| 3 | **T-18 게이트 자기시험** — 차단 검사 5종이 각자의 픽스처에서 발화하는가 | 차단 |
+| 4 | **업로드 어댑터 dry-run** (6개 타깃 페이로드 검증) | 차단 |
+| 5 | 골든셋 생성 가능 | 차단 |
+| 6 | `tools/*.py` 컴파일 | 차단 |
+| 7 | **T-17 에이전트 표면** — SKILL.md 규격·색인 동기 | 차단 |
+| 8 | **T-17 자기시험** — 규격 위반 픽스처가 FAIL을 유발하는가 | 차단 |
+| 9 | **T-16 재검토 기한** | 유예 초과 시 차단 |
+| 10 | **T-14 검색 회귀** — 자동 qrels, 본문 전용, 허용 낙폭 0.02 | 차단 |
+| 11 | **T-14 검색 회귀** — held-out, 프로덕션 설정, 허용 낙폭 0.05 | 차단 |
 
-WARN 항목(T-01/02/06/07)은 차단하지 않는다. 구조적 결함이 아니라 설계 판단의 영역이며,
-기준을 넘겼다는 이유로 빌드를 막으면 기준을 낮추는 압력만 생긴다.
+2단계는 manifest↔청크↔임베딩 3자 정합, ingestion exclude 경로, 빌더 입력 자족성,
+confidence 필터 정책 문서 일치, 정정 원장 회귀 시험을 묶은 것이다.
+예전에는 이 파일 안의 heredoc이었고 문법 검사도 자기시험도 받지 못했다.
+
+WARN 항목(T-01/02/06/07/15)은 차단하지 않는다. 구조적 결함이 아니라 설계 판단의
+영역이며, 기준을 넘겼다는 이유로 빌드를 막으면 기준을 낮추는 압력만 생긴다.
+
+### 기준선 갱신
+
+T-14는 `tests/baseline_*.json`과 비교한다. 비교 전에 **설정이 같은지 먼저 확인**한다 —
+뷰·융합·재순위·홉 수가 다르면 두 수치는 비교 대상이 아니다.
+
+수치가 내려간 것이 의도한 결과라면 기준선을 갱신하고 **같은 커밋에 포함**한다.
+그래야 열화가 조용히 지나가지 않는다.
+
+```bash
+python3 tools/eval_retrieval.py ... --write-baseline tests/baseline_retrieval.json
+```
 
 ---
 

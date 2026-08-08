@@ -12,7 +12,7 @@ Claude Code 전용 항목은 `CLAUDE.md`에 있다. **두 파일이 겹치는 �
 도구**로 구성된다. 산출물은 두 층이다.
 
 - 사람이 읽는 위키 — `kb/docs/`
-- RAG 색인용 청크 — `kb/chunks/` (v3.0, 100개)
+- RAG 색인용 청크 — `kb/chunks/` (v3.0, 101개)
 - 에이전트용 라우팅 색인 — `kb/INDEX.md`, `kb/llms.txt`
 
 ## 절대 어기지 말 것
@@ -77,7 +77,7 @@ kb/INDEX.md         kb/llms.txt
 | 라우팅 색인 재생성 | `python3 tools/make_index.py` |
 | 골든셋·qrels 생성 | `python3 tools/make_golden.py kb/manifest.jsonl --format qrels > tests/qrels_auto.jsonl` |
 | 검색 평가 (자동 세트) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl` |
-| 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields --fuse rrf --expand-hops 1` |
+| 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
 
 청크 재빌드는 저장소만으로 완결된다.
