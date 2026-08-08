@@ -1,0 +1,140 @@
+# Ainative
+
+> 사내 AI 협업(Claude Code / Gemini CLI / MCP / Skills) 지식 베이스. 청크 100개를 주제별로 나눠 두었습니다. 각 링크는 저장소 안의 마크다운 파일이며 그 자체로 완결된 문서입니다.
+
+생성물입니다. `python3 tools/make_index.py`로 다시 만듭니다.
+
+확신도(`confidence`)가 `mixed`·`draft`인 항목은 검증되지 않은 벤더 주장이나 미기입 사내 정보를 담고 있으므로 사실 확인용으로 인용하지 마십시오.
+
+## concept
+
+- [Claude Code 개요 — 정의](chunks/v3-01-claude-code-overview-01.md): Claude Code 개요란 무엇인가? (auto-merged)
+- [Claude Code 개요 — 예외 사례](chunks/v3-01-claude-code-overview-02.md): Claude Code 개요에서 자주 발생하는 문제는? (auto-merged)
+- [Skills (스킬) — 정의](chunks/v3-02-skills-01.md): Skills (스킬)란 무엇인가? (auto-merged)
+- [Skills (스킬) — 운영 가이드](chunks/v3-02-skills-02.md): Skills (스킬) 운영 시 주의점은? (auto-merged)
+- [Hooks (훅) — 정의](chunks/v3-03-hooks-01.md): Hooks (훅)란 무엇인가? (auto-merged)
+- [Hooks (훅) — 설정법](chunks/v3-03-hooks-02.md): Hooks (훅)는 어떻게 설정하는가? (auto-merged)
+- [Hooks (훅) — 운영 가이드](chunks/v3-03-hooks-03.md): Hooks (훅) 운영 시 주의점은? (auto-merged)
+- [MCP (Model Context Protocol) — 정의](chunks/v3-04-mcp-01.md): MCP (Model Context Protocol)란 무엇인가? (auto-merged)
+- [MCP (Model Context Protocol) — 설정법](chunks/v3-04-mcp-02.md): MCP (Model Context Protocol)는 어떻게 설정하는가? (auto-merged)
+- [MCP (Model Context Protocol) — 운영 가이드](chunks/v3-04-mcp-03.md): MCP (Model Context Protocol) 운영 시 주의점은? (auto-merged)
+- [MCP (Model Context Protocol) — 예외 사례](chunks/v3-04-mcp-04.md): MCP (Model Context Protocol)에서 자주 발생하는 문제는? (auto-merged)
+- [CLAUDE.md 메모리 시스템 — 정의](chunks/v3-05-claude-md-memory-01.md): CLAUDE.md 메모리 시스템란 무엇인가? (auto-merged)
+- [CLAUDE.md 메모리 시스템 — 운영 가이드](chunks/v3-05-claude-md-memory-02.md): CLAUDE.md 메모리 시스템 운영 시 주의점은? (auto-merged)
+- [Subagents (서브에이전트) — 정의](chunks/v3-06-subagents-01.md): Subagents (서브에이전트)란 무엇인가? (auto-merged)
+- [Subagents (서브에이전트) — 설정법](chunks/v3-06-subagents-02.md): Subagents (서브에이전트)는 어떻게 설정하는가? (auto-merged)
+- [Subagents (서브에이전트) — 운영 가이드](chunks/v3-06-subagents-03.md): Subagents (서브에이전트) 운영 시 주의점은? (auto-merged)
+- [Subagents (서브에이전트) — 예외 사례](chunks/v3-06-subagents-04.md): Subagents (서브에이전트)에서 자주 발생하는 문제는? (auto-merged)
+- [툴 생성 에이전트 — 정의](chunks/v3-07-tool-generation-agent-01.md): 툴 생성 에이전트란 무엇인가? (auto-merged)
+- [툴 생성 에이전트 — 설정법](chunks/v3-07-tool-generation-agent-02.md): 툴 생성 에이전트는 어떻게 설정하는가? (auto-merged)
+- [툴 생성 에이전트 — 예외 사례](chunks/v3-07-tool-generation-agent-03.md): 툴 생성 에이전트에서 자주 발생하는 문제는? (auto-merged)
+- [컨텍스트 엔지니어링 — 정의](chunks/v3-08-context-engineering-01.md): 컨텍스트 엔지니어링란 무엇인가? (auto-merged)
+- [컨텍스트 엔지니어링 — 운영 가이드](chunks/v3-08-context-engineering-02.md): 컨텍스트 엔지니어링 운영 시 주의점은? (auto-merged)
+- [컨텍스트 엔지니어링 — 보안 고려사항](chunks/v3-08-context-engineering-03.md): 컨텍스트 엔지니어링의 보안 고려사항은? (auto-merged)
+
+## specification
+
+- [MCP 사양 현황과 주요 리비전 (2024~2026)](chunks/v3-mcp-spec.md): MCP 사양의 주요 버전은? (verified)
+- [MCP 전송 방식: stdio와 Streamable HTTP](chunks/v3-mcp-transport.md): MCP 전송 방식은 무엇이 있는가? (verified)
+- [MCP 사양 버전 마이그레이션 가이드](chunks/v3-mcp-version-migration.md): MCP 사양을 어느 버전으로 올려야 하나요? (draft)
+
+## architecture
+
+- [Skills vs MCP vs Subagent vs Slash Command 선택 기준](chunks/v3-component-selection.md): MCP와 Skills 중 무엇을 먼저 만들어야 하는가? (verified)
+- [에이전트 프레임워크 비교 (사내 배포 관점)](chunks/v3-framework-comparison.md): 사내 배포에 가장 적합한 에이전트 프레임워크는? (verified)
+- [한국어 RAG 고려사항 — 임베딩 선택과 토큰 예산](chunks/v3-korean-rag.md): 한국어 RAG에는 어떤 임베딩 모델이 좋나요? (draft)
+- [MCP Gateway 도입 판단](chunks/v3-mcp-gateway.md): MCP Gateway란? (mixed)
+- [RAG 파이프라인 설계 — 적재부터 검색 품질까지](chunks/v3-rag-pipeline-design.md): RAG 파이프라인을 어떻게 설계하나요? (draft)
+- [워크플로우 아키텍처 패턴 (Anthropic Building Effective Agents)](chunks/v3-workflow-patterns.md): 워크플로우와 에이전트의 차이는? (verified)
+
+## development
+
+- [Claude Agent Skills: 포맷과 Progressive Disclosure](chunks/v3-agent-skills.md): Agent Skills 포맷은? (verified)
+- [AGENTS.md 단일 소스 전략](chunks/v3-agents-md.md): AGENTS.md란? (verified)
+- [Cross-model review (Claude 생성 → Gemini 리뷰)](chunks/v3-cross-model-review.md): cross-model review란? (verified)
+- [결정론 최대화 원칙 (Shopify Roast의 교훈)](chunks/v3-determinism-max.md): 결정론 최대화 원칙이란? (verified)
+- [doctor 커맨드: 온보딩 문의를 없애는 최소 투자](chunks/v3-doctor-command.md): doctor 커맨드란? (verified)
+- [--dry-run + confirm + 진행표시 3종](chunks/v3-dry-run-confirm.md): --dry-run이 왜 필요한가? (verified)
+- [파일 기반 메모리 패턴 (CONTINUE.md)](chunks/v3-file-memory.md): 긴 세션에서 컨텍스트 손실을 어떻게 막는가? (verified)
+- [git worktree 병렬 세션](chunks/v3-git-worktree.md): claude --worktree란? (verified)
+- [Hooks: 프롬프트 규칙을 쉘 명령으로 강제](chunks/v3-hooks.md): Claude Code hook이란? (verified)
+- [llms.txt로 사내 API 문서 에이전트 친화화](chunks/v3-llms-txt.md): llms.txt란? (verified)
+- [MCP 서버 로컬 개발 규칙 (생성 에이전트 하드 규칙)](chunks/v3-mcp-dev-rules.md): MCP 서버 개발 시 반드시 지켜야 할 규칙은? (verified)
+- [MCP 개발 SDK와 FastMCP](chunks/v3-mcp-sdk.md): MCP Python SDK와 FastMCP의 차이는? (mixed)
+- [Spec-first 워크플로우 (GitHub Spec Kit)](chunks/v3-spec-first.md): GitHub Spec Kit이란? (verified)
+
+## reference
+
+- [오픈소스 MCP 서버 카탈로그 — 정의](chunks/v3-01-open-source-mcp-servers-01.md): 오픈소스 MCP 서버 카탈로그란 무엇인가? (auto-merged)
+- [오픈소스 MCP 서버 카탈로그 — Claude Code 권장 MCP 서버 (2026년)](chunks/v3-01-open-source-mcp-servers-02.md): 오픈소스 MCP 서버 카탈로그에는 무엇이 있는가? (auto-merged)
+- [오픈소스 MCP 서버 카탈로그 — MCP 서버 디렉토리 및 검색](chunks/v3-01-open-source-mcp-servers-03.md): 오픈소스 MCP 서버 카탈로그에는 무엇이 있는가? (auto-merged)
+- [Skills 설정법](chunks/v3-01-skills-setup.md): Skills 설정법란 무엇인가? (auto-merged)
+- [Hooks 설정법](chunks/v3-02-hooks-setup.md): Hooks 설정법란 무엇인가? (auto-merged)
+- [관련 라이브러리 및 SDK — 정의](chunks/v3-02-libraries-and-sdks-01.md): 관련 라이브러리 및 SDK란 무엇인가? (auto-merged)
+- [관련 라이브러리 및 SDK — MCP 서버 구축 예시](chunks/v3-02-libraries-and-sdks-02.md): 관련 라이브러리 및 SDK에는 무엇이 있는가? (auto-merged)
+- [에이전트 프레임워크 및 게이트웨이 — 정의](chunks/v3-03-agent-frameworks-and-gateways-01.md): 에이전트 프레임워크 및 게이트웨이란 무엇인가? (auto-merged)
+- [에이전트 프레임워크 및 게이트웨이 — MCP 게이트웨이](chunks/v3-03-agent-frameworks-and-gateways-02.md): 에이전트 프레임워크 및 게이트웨이에는 무엇이 있는가? (auto-merged)
+- [에이전트 프레임워크 및 게이트웨이 — 선택 가이드](chunks/v3-03-agent-frameworks-and-gateways-03.md): 에이전트 프레임워크 및 게이트웨이에는 무엇이 있는가? (auto-merged)
+- [MCP 설정법](chunks/v3-03-mcp-setup.md): MCP 설정법란 무엇인가? (auto-merged)
+- [툴 생성 에이전트 설정법 — 정의](chunks/v3-04-tool-generation-agent-setup-01.md): 툴 생성 에이전트 설정법란 무엇인가? (auto-merged)
+- [툴 생성 에이전트 설정법 — 운영 가이드](chunks/v3-04-tool-generation-agent-setup-02.md): 툴 생성 에이전트 설정법 운영 시 주의점은? (auto-merged)
+- [실패·안티패턴과 비용 사고](chunks/v3-anti-patterns.md): 에이전트 프로젝트 실패율은? (mixed)
+- [Claude Code와 Gemini CLI MCP 등록 및 호환성](chunks/v3-cli-registration.md): Claude Code에 MCP 서버를 어떻게 등록하는가? (verified)
+- [배포 전 종합 체크리스트](chunks/v3-comprehensive-checklist.md): 배포 전 체크리스트는? (verified)
+- [FAQ: 자주 묻는 질문](chunks/v3-faq.md): MCP를 많이 두지 말아야 하는 이유는? (verified)
+- [고급 프롬프트 템플릿 (5종)](chunks/v3-prompt-templates.md): 설계 요청 프롬프트는? (verified)
+- [Quick Wins TOP 15 (ROI 높고 리스크 낮은 순)](chunks/v3-quick-wins.md): ROI가 높고 리스크가 낮은 항목은? (verified)
+- [샘플 설정 파일 (.mcp.json, CLAUDE.md, GEMINI.md, SKILL.md)](chunks/v3-sample-configs.md): .mcp.json 예제는? (verified)
+
+## operations
+
+- [보안 및 거버넌스](chunks/v3-01-security-governance.md): 보안 및 거버넌스란 무엇인가? (auto-merged)
+- [트러블슈팅 가이드](chunks/v3-01-troubleshooting.md): 트러블슈팅 가이드란 무엇인가? (auto-merged)
+- [팀 워크플로우](chunks/v3-02-team-workflow.md): 팀 워크플로우란 무엇인가? (auto-merged)
+- [관측성 및 유지보수](chunks/v3-03-observability.md): 관측성 및 유지보수란 무엇인가? (auto-merged)
+- [품질 평가 및 CI — 정의](chunks/v3-04-quality-evaluation-ci-01.md): 품질 평가 및 CI란 무엇인가? (auto-merged)
+- [품질 평가 및 CI — 운영 가이드](chunks/v3-04-quality-evaluation-ci-02.md): 품질 평가 및 CI 운영 시 주의점은? (auto-merged)
+- [비용·성능 최적화 — 정의](chunks/v3-05-cost-performance-optimization-01.md): 비용·성능 최적화란 무엇인가? (auto-merged)
+- [비용·성능 최적화 — 운영 가이드](chunks/v3-05-cost-performance-optimization-02.md): 비용·성능 최적화 운영 시 주의점은? (auto-merged)
+- [배포·채택·거버넌스 — 정의](chunks/v3-06-deployment-adoption-governance-01.md): 배포·채택·거버넌스란 무엇인가? (auto-merged)
+- [배포·채택·거버넌스 — 운영 가이드](chunks/v3-06-deployment-adoption-governance-02.md): 배포·채택·거버넌스 운영 시 주의점은? (auto-merged)
+- [Claude Code 운영 가이드](chunks/v3-claude-code-guide.md): Claude Code에서 가장 먼저 해야 할 것은? (verified)
+- [Eval/Observability 프레임워크 셀프호스팅 (폐쇄망)](chunks/v3-eval-frameworks.md): 폐쇄망에서 쓸 수 있는 eval 도구는? (mixed)
+- [Gemini CLI 운영 가이드](chunks/v3-gemini-cli-guide.md): Gemini CLI 설정은 어디에? (verified)
+- [장애 대응 런북 — 에이전트/MCP 운영 사고](chunks/v3-incident-runbook.md): 에이전트 장애가 나면 어떻게 대응하나요? (draft)
+- [관측: OpenTelemetry GenAI Semantic Conventions](chunks/v3-observability-otel.md): OpenTelemetry GenAI semantic conventions 속성은? (verified)
+- [신규 사용자 온보딩 — 첫날 경로](chunks/v3-onboarding-day1.md): 처음 시작할 때 무엇부터 해야 하나요? (draft)
+- [3단계 로드맵 실행 계획](chunks/v3-roadmap.md): 3단계 로드맵은? (verified)
+
+## quality
+
+- [평가 방법론과 비결정성 다루기](chunks/v3-eval-methodology.md): LLM-as-judge의 한계는? (verified)
+- [mcp-compliance와 계약 테스트 원칙](chunks/v3-mcp-compliance.md): mcp-compliance란? (verified)
+- [mcp-eval / mcp-agent: MCP 서버 평가 프레임워크](chunks/v3-mcp-eval.md): mcp-eval의 assertion 종류는? (verified)
+- [MCP Inspector: 품질 검증 첫 관문](chunks/v3-mcp-inspector.md): MCP Inspector란? (verified)
+- [CI 회귀 게이트 구축](chunks/v3-regression-gate.md): CI 회귀 게이트 임계는? (verified)
+
+## security
+
+- [MCP 보안: 실제 사고와 CVE 사례](chunks/v3-mcp-security-cve.md): mcp-remote CVE-2025-6514란? (verified)
+- [MCP 보안: 사양 필수 통제 항목](chunks/v3-mcp-security-spec.md): MCP 토큰 패스스루 금지 규칙은? (verified)
+
+## governance
+
+- [보안 감사·컴플라이언스 대응 절차](chunks/v3-compliance-audit.md): 보안 감사 대응은 어떻게 준비하나요? (draft)
+- [배포 채널 3종 세트 (npm/PyPI/MCPB)](chunks/v3-deployment-channels.md): MCPB 번들이란? (verified)
+- [사내 배포 거버넌스와 채택 전략](chunks/v3-deployment-governance.md): Claude Code 플러그인 마켓플레이스는 어떻게 구축하는가? (verified)
+- [선도 기업 사례 (Block/Goose, Uber, Coinbase 등)](chunks/v3-enterprise-cases.md): Block의 Goose 사례는? (mixed)
+- [점진적 자율성 로드맵](chunks/v3-gradual-autonomy.md): 에이전트 자율성은 어떻게 단계적으로 높여야 하는가? (verified)
+
+## cost
+
+- [비용 예산 책정과 한도 관리](chunks/v3-budget-management.md): AI 도구 예산을 어떻게 잡나요? (draft)
+- [비용 가시화: ccusage (폐쇄망 OK)](chunks/v3-cost-visibility.md): ccusage란? (verified)
+- [모델 라우팅: 서브에이전트 model: haiku](chunks/v3-model-routing.md): 서브에이전트 모델은 어떻게 설정하는가? (verified)
+- [Prompt caching: 단일 최대 비용 절감 레버](chunks/v3-prompt-caching.md): prompt caching의 절감 효과는? (verified)
+
+## best-practices
+
+- [Anthropic Advanced Tool Use: Tool Search와 defer_loading](chunks/v3-anthropic-advanced.md): Tool Search Tool이란? (verified)
+- [Anthropic 공식 툴 작성 5원칙 (2025-09-11)](chunks/v3-anthropic-principles.md): Anthropic 툴 작성 5원칙은? (verified)

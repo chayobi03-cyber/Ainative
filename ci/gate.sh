@@ -59,7 +59,7 @@ python3 tools/eval_retrieval.py kb/manifest.jsonl \
   --mode body --json out/retrieval.json >/dev/null 2>&1 || true
 python3 tools/eval_retrieval.py kb/manifest.jsonl \
   --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl \
-  --views body,fields --fuse rrf --expand-hops 1 \
+  --views body,fields,index --fuse rrf --expand-hops 1 \
   --json out/retrieval-heldout.json >/dev/null 2>&1 || true
 
 echo

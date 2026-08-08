@@ -49,6 +49,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from retrieval import (  # noqa: E402
+    VIEWS,
     BM25,
     build_view,
     expand_graph,
@@ -336,7 +337,7 @@ def main() -> int:
     ap.add_argument("--heldout", type=Path, default=None)
     ap.add_argument("--negatives", type=Path, default=None)
     ap.add_argument("--dense-runs", type=Path, default=None)
-    ap.add_argument("--mode", choices=["body", "fields", "ngram", "all"], default="body",
+    ap.add_argument("--mode", choices=[*VIEWS, "all"], default="body",
                     help="단일 뷰 지정. --views의 축약형")
     ap.add_argument("--views", default=None,
                     help="쉼표 구분. 예: body,fields,dense")

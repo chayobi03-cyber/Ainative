@@ -1,6 +1,12 @@
 # CLAUDE.md
 
-Guidance for Claude Code (and other AI assistants) working in this repository.
+> **먼저 읽을 것: [`AGENTS.md`](AGENTS.md).**
+> 도구에 중립적인 규칙(생성물 취급, 측정 원칙, 보존 불변식, 게이트, 커밋 규칙)은
+> 전부 그쪽에 있다. 두 파일에 같은 규칙을 두면 곧 어긋나므로 여기에는 Claude Code
+> 전용 항목과 명령 표만 둔다.
+>
+> 지식 베이스를 **조회**하려면 [`skills/ainative-kb/SKILL.md`](skills/ainative-kb/SKILL.md)을
+> 쓴다. 이 문서는 저장소를 **수정**할 때의 안내다.
 
 ## 프로젝트 개요
 
@@ -19,8 +25,14 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 ```
 .
 ├── CLAUDE.md
+├── AGENTS.md              # 도구 중립 에이전트 지침 (공통 규칙의 정본)
+├── skills/
+│   └── ainative-kb/
+│       └── SKILL.md       # KB 조회용 Skill (agentskills.io 규격)
 ├── kb/
 │   ├── chunks/            # v3.0 RAG 청크 100개 (생성물 — 직접 수정 금지)
+│   ├── INDEX.md           # 에이전트용 라우팅 색인 (생성물)
+│   ├── llms.txt           # 압축 색인 (생성물)
 │   ├── _inputs/           # 빌더 입력 v1/v2.3 원본 (색인 제외)
 │   ├── authored/          # 신규 집필 청크 원본 (빌더 입력)
 │   ├── assets/            # 이미지·도표 원본 (색인 제외)
@@ -37,6 +49,12 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── make_golden.py     # 검색 골든셋 생성기
 │   ├── eval_retrieval.py  # BM25 검색 평가
 │   ├── upload_vectors.py  # 벡터 DB 적재 어댑터
+│   ├── retrieval.py       # 검색 원시 연산 (BM25·RRF·MMR·그래프 확장·지표)
+│   ├── make_index.py      # manifest → INDEX.md / llms.txt
+│   ├── check_consistency.py   # 저장소 정합성 5종
+│   ├── check_gate_selftest.py # T-18 게이트 자기시험
+│   ├── check_agent_surface.py # T-17 SKILL.md 규격·색인 동기
+│   ├── check_freshness.py # T-16 재검토 기한
 │   ├── check_owners.py    # 담당자 지정 점검
 │   └── make_calendar.py   # 재검토 일정 → .ics
 ├── OWNERS.yaml            # 담당자 지정 (인수인계 시 기입)
@@ -45,8 +63,13 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   └── README.md          # GitLab/Jenkins/Azure 연동 예시
 ├── tests/
 │   ├── run_checks.sh      # 품질 게이트 (CI 진입점)
-│   ├── fixtures/          # T-13 자기시험용 결함 픽스처
-│   └── golden_retrieval.jsonl
+│   ├── fixtures/          # 게이트 자기시험용 결함 픽스처 (T-13/T-17/T-18)
+│   ├── golden_retrieval.jsonl   # 구형 단일정답 (하위호환 유지)
+│   ├── qrels_auto.jsonl         # 등급 qrels (생성물)
+│   ├── qrels_adjudicated.jsonl  # 사람/AI 판정 원장 (생성물 아님)
+│   ├── heldout_queries.jsonl    # held-out 질의 (origin으로 출처 분리)
+│   ├── negative_queries.jsonl   # KB 범위 밖 질의
+│   └── baseline_*.json          # T-14 회귀 기준선
 └── docs/
     ├── TEST-PLAN.md       # 시험법
     ├── TEST-RESULTS.md    # 시험결과
@@ -70,15 +93,24 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | 목적 | 명령 |
 |---|---|
 | 품질 게이트 전체 실행 | `./tests/run_checks.sh` |
+| CI 게이트 | `./ci/gate.sh` |
 | 청크 감사 | `python3 tools/kb_audit.py kb/chunks` |
 | 감사 결과 JSON 저장 | `python3 tools/kb_audit.py kb/chunks --json out.json` |
 | 두 세트 중복 비교 | `python3 tools/kb_audit.py <A> --compare <B>` |
+| 저장소 정합성 | `python3 tools/check_consistency.py` |
+| 게이트 자기시험 | `python3 tools/check_gate_selftest.py` |
+| 에이전트 표면 검증 | `python3 tools/check_agent_surface.py` |
+| 라우팅 색인 재생성 | `python3 tools/make_index.py` |
+| 재검토 기한 | `python3 tools/check_freshness.py` |
 | 골든셋 통계 | `python3 tools/make_golden.py kb/manifest.jsonl --stats` |
-| 골든셋 생성 | `python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl` |
-| BM25 검색 평가 | `python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl --compare-modes` |
+| 골든셋 생성 (구형 단일정답) | `python3 tools/make_golden.py kb/manifest.jsonl > tests/golden_retrieval.jsonl` |
+| qrels 생성 (등급·복수정답) | `python3 tools/make_golden.py kb/manifest.jsonl --format qrels > tests/qrels_auto.jsonl` |
+| 검색 평가 (자동 세트) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl` |
+| 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1` |
+| 뷰별 단독 비교 | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl --compare-modes` |
+| 기준선 갱신 | `python3 tools/eval_retrieval.py ... --write-baseline tests/baseline_retrieval.json` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
 | 실제 적재 | `python3 tools/upload_vectors.py --target chromadb --model bge-m3 --collection ainative-v3` |
-| CI 게이트 | `./ci/gate.sh` |
 | 담당자 점검 | `python3 tools/check_owners.py` |
 | 재검토 일정 .ics | `python3 tools/make_calendar.py --out ainative-review.ics` |
 
@@ -94,7 +126,8 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 ## 규칙
 
 ### 생성물을 직접 고치지 않는다
-`kb/chunks/`, `kb/manifest.jsonl`, `kb/embeddings.jsonl`은 **빌더 출력**이다.
+`kb/chunks/`, `kb/manifest.jsonl`, `kb/embeddings.jsonl`, `kb/INDEX.md`, `kb/llms.txt`는
+**전부 생성물**이다.
 내용을 바꾸려면 `kb/authored/`(신규 집필분) 또는 빌더 로직을 고치고 재생성한다.
 빌더 입력이 없는 상황에서 청크를 직접 편집했다면 **반드시 커밋 메시지에 명시**한다.
 
@@ -119,10 +152,14 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 `kb/sources/`에는 파생 청크의 원본 전문이 있다. `**/*.md`로 적재하면 같은 내용이
 두 번 색인된다. `kb/ingestion.yaml`의 include/exclude를 지킬 것.
 
-### 검색 평가는 본문 전용 색인으로 한다
-`retrieval_questions`로 골든셋을 만들었으므로, 그 질문을 색인에 넣은 채 평가하면
-정답을 색인해 두고 찾는 셈이 된다(실측 Recall@10 = 1.000, 순수 누출).
-평가 시 `--mode body`가 유일하게 유효한 수치다.
+### 검색 평가는 세트에 맞는 뷰로만 한다
+`retrieval_questions`로 만든 **자동 골든셋**은 `--mode body`로만 잰다. 그 질문을 색인한
+`fields` 뷰로 평가하면 정답을 색인해 두고 찾는 셈이다(실측 Recall@10 = 1.000, 순수 누출).
+`eval_retrieval.py`가 누출률을 실측해 자동으로 막는다.
+
+융합·재순위·그래프 확장 수치는 **held-out 세트에서만** 유효하다. held-out 질의는
+`retrieval_questions`에 없으므로 프로덕션 설정을 그대로 잴 수 있다.
+실측 결과와 채택 근거는 `kb/ingestion.yaml`의 `retrieval` 절과 `docs/TEST-RESULTS.md` §12.
 
 ### 사실 정정은 corrections.yaml로 한다
 `kb/chunks/`를 직접 고치면 다음 빌드에서 되돌아간다. 정정은 `kb/corrections.yaml`에
@@ -153,8 +190,9 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 
 `./tests/run_checks.sh`가 CI 진입점이다. 종료 코드 0이면 적재 가능.
 
-차단 항목(FAIL): T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성, T-08 포맷, T-13 에셋 무결성
-경고 항목(WARN, 차단 안 함): T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형
+차단(FAIL): T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성, T-08 포맷,
+T-13 에셋 무결성, T-14 검색 회귀, T-16 재검토 기한, T-17 에이전트 표면, T-18 게이트 자기시험
+경고(WARN, 차단 안 함): T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형, T-15 어트랙터
 
 ## 재검토 주기
 

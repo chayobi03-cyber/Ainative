@@ -46,12 +46,20 @@ run "골든셋 생성" python3 tools/make_golden.py kb/manifest.jsonl --stats
 # 6. 도구 스크립트 문법
 run "tools/*.py 컴파일" python3 -m compileall -q tools
 
-# 7. T-16 재검토 기한. 기한 초과 후 유예 14일까지는 WARN이고 그 뒤 차단한다.
+# 7. T-17 에이전트 표면 — SKILL.md 규격, 라우팅 색인 동기, AGENTS.md 경로.
+#    색인은 생성물이라 재빌드 후 재생성을 잊으면 에이전트를 없는 청크로 안내한다.
+run "T-17 에이전트 표면" python3 tools/check_agent_surface.py
+
+# 8. T-17 자기시험 — 규격 위반 픽스처가 실제로 FAIL을 유발하는가.
+run "T-17 자기시험(픽스처가 FAIL을 유발)" bash -c \
+  '! python3 tools/check_agent_surface.py --skills tests/fixtures/agent_surface_broken'
+
+# 9. T-16 재검토 기한. 기한 초과 후 유예 14일까지는 WARN이고 그 뒤 차단한다.
 #    YAML은 알림을 보내지 않는다 — 지금까지 기한은 적혀만 있었다.
 #    모델 가격 항목(2026-09-01)이 방치되면 2026-09-16부터 이 단계가 막는다. 의도한 동작이다.
 run "T-16 재검토 기한" python3 tools/check_freshness.py
 
-# 7. T-14 검색 회귀 — 자동 qrels(본문 전용).
+# 10. T-14 검색 회귀 — 자동 qrels(본문 전용).
 #    여기까지 이 게이트에는 검색 항목이 하나도 없었다. ci/gate.sh가 평가를 돌리긴
 #    했지만 `|| true`라 아티팩트만 남고 아무것도 막지 못했다. Recall이 절반으로
 #    떨어져도 CI는 초록이었다.
@@ -59,10 +67,10 @@ run "T-14 검색 회귀 (자동 qrels)" python3 tools/eval_retrieval.py kb/manif
   --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl --mode body \
   --baseline tests/baseline_retrieval.json --max-drop 0.02
 
-# 8. T-14 검색 회귀 — held-out(실제 질의에 가까운 세트, 프로덕션 설정).
+# 11. T-14 검색 회귀 — held-out(실제 질의에 가까운 세트, 프로덕션 설정).
 #     표본이 40건뿐이라 흔들림이 크므로 허용 낙폭을 넓게 잡는다.
 run "T-14 검색 회귀 (held-out)" python3 tools/eval_retrieval.py kb/manifest.jsonl \
-  --heldout tests/heldout_queries.jsonl --views body,fields --fuse rrf --expand-hops 1 \
+  --heldout tests/heldout_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1 \
   --baseline tests/baseline_heldout.json --max-drop 0.05
 
 echo

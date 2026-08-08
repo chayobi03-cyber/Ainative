@@ -15,6 +15,10 @@ index:
   embedding_input: "embeddings.jsonl"
 
 exclude:
+  # 에이전트용 라우팅 색인. manifest에서 생성한 것이라 색인하면 이중 색인이다.
+  # 검색이 아니라 progressive disclosure의 2단계(어느 청크를 열지 고르기)에 쓴다.
+  - "INDEX.md"
+  - "llms.txt"
   # 사람이 읽는 위키 레이어. chunks/ 가 이 내용에서 파생됐으므로 색인하면 중복이다.
   - "docs/**"
   # 원본 리서치 전문. 출처 추적·인용 확인용으로만 보관한다.
@@ -39,19 +43,60 @@ embedding:
       when: "이미 OpenAI 스택인 경우"
 
 retrieval:
+  # 아래 설정은 held-out 세트(tests/heldout_queries.jsonl, 40건)에서 실측해 고른 것이다.
+  # 측정 결과 전문은 docs/TEST-RESULTS.md §12. 재현:
+  #   python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  #     --heldout tests/heldout_queries.jsonl --views body,fields,index --fuse rrf
+  #
+  # 자동 골든셋(retrieval_questions 유래)으로는 이 선택을 할 수 없다 — `fields` 뷰가
+  # 그 질문을 색인하므로 Recall@10이 1.000으로 나오고 아무것도 구분되지 않는다.
+  lexical:
+    # 어휘 뷰 3종을 RRF로 융합한다. 같은 청크를 서로 다른 텍스트로 보게 하는 것이
+    # 요점이며, 순위만 쓰므로 점수 정규화가 필요 없다.
+    views:
+      - body     # 청크 본문
+      - fields   # 제목 + 태그 + retrieval_questions (doc2query 성격의 확장)
+      - index    # chunk_id + 제목 + 카테고리 + 태그 + use_cases (kb/INDEX.md 한 행)
+    fusion: "rrf"
+    rrf_k: 60
+    # 측정치 (held-out 40건, nDCG@10 / Recall@10 / Success@10)
+    #   body 단독               0.1734 / 0.2667 / 0.500
+    #   fields 단독             0.3255 / 0.3833 / 0.525
+    #   index 단독              0.3364 / 0.3625 / 0.525
+    #   body+fields             0.2877 / 0.4083 / 0.600
+    #   body+fields+index       0.3772 / 0.4833 / 0.700   ← 채택
+    # 4-gram 뷰(ngram)는 모든 지표를 떨어뜨려 채택하지 않았다.
   hybrid:
+    # dense를 더한 진짜 하이브리드는 **아직 측정하지 못했다.** 벡터 DB 적재가 선행돼야
+    # 하고 tools/는 외부 의존성을 두지 않는다. 순위 파일을 받아 융합하는 경로는 열려 있다:
+    #   python3 tools/eval_retrieval.py ... --dense-runs runs.jsonl
+    # 절차는 docs/TEST-PLAN.md §3, 모델 선정은 docs/EMBEDDING-SELECTION.md.
     enabled: true
-    # 본문 전체가 아니라 제목·태그·질문에만 BM25를 건다.
-    # 한국어 어미 변화 영향을 줄이고 긴 청크 편향을 막기 위함.
-    bm25_fields: ["title", "tags", "retrieval_questions"]
-    dense_weight: 0.6
+    dense_weight: 0.6          # 미측정 — 벤더 관례값이지 이 코퍼스의 실측값이 아니다
+    measured: false
   rerank:
-    enabled: true
+    # 크로스인코더 재순위는 모델이 필요해 폐쇄망 CI에서 못 돈다. 대체재로 MMR
+    # (다양성 재순위)을 재봤으나 held-out에서 nDCG가 0.2877 → 0.2825로 내려갔다.
+    # 기본값을 켜 두지 않는다.
+    enabled: false
+    measured: true
     candidates: 24
     final_k: 5
   context_expansion:
-    # related_chunks를 따라 이웃 청크를 끌어온다. 2홉을 넘으면 정밀도가 떨어진다.
+    # related_chunks를 따라 이웃 청크를 끌어온다.
+    # 실측: 1홉에서 body+fields Recall@10 0.4083 → 0.4167. 3종 융합에서는 변화 없음.
+    # 효과가 작으므로 2홉 상한은 유지하되 기본은 1홉으로 둔다.
     max_hops: 2
+    default_hops: 1
+    measured: true
+  abstain:
+    # 범위 밖 질의를 거르는 절대 점수 하한은 **작동하지 않는다.**
+    # 실측 분리도 AUC = 0.5938 (0.5 = 신호 없음). 범위 밖 질의의 1위 점수 중앙값이
+    # 오히려 범위 안보다 높았다. 어떤 하한을 잡아도 범위 밖을 막는 만큼 범위 안을 버린다.
+    # 하한을 여기 적어두면 작동하지 않는 통제를 작동한다고 적는 셈이므로 적지 않는다.
+    score_floor: null
+    separability_auc: 0.5938
+    note: "기권 판정에는 재순위 모델이나 상대 신호가 필요하다. tests/negative_queries.jsonl 참조"
   filters:
     # confidence 필터를 열어두는 이유: 이 KB에는 자동 병합(auto-merged)과
     # 초안(draft) 청크가 섞여 있다. 사실 확인이 필요한 질의에서는 verified만 남긴다.
@@ -75,9 +120,24 @@ assets:
     pass_image_to_model: true
 
 quality_gate:
-  # tools/kb_audit.py 기준. FAIL이 하나라도 있으면 적재를 막는다.
-  fail_on: ["T-03", "T-04", "T-05", "T-08", "T-13"]
-  warn_only: ["T-01", "T-02", "T-06", "T-07"]
+  # tests/run_checks.sh 기준. FAIL이 하나라도 있으면 적재를 막는다.
+  # T-01~T-08, T-13은 tools/kb_audit.py가, 나머지는 각 전용 도구가 판정한다.
+  fail_on:
+    - "T-03"   # 메타데이터 완전성
+    - "T-04"   # retrieval_questions
+    - "T-05"   # 참조 무결성
+    - "T-08"   # 포맷
+    - "T-13"   # 에셋·원문 앵커 무결성
+    - "T-14"   # 검색 회귀 (기준선 대비 낙폭)
+    - "T-16"   # 재검토 기한 (유예 후)
+    - "T-17"   # 에이전트 표면 (SKILL.md 규격·색인 동기)
+    - "T-18"   # 게이트 자기시험 (차단 검사가 실제로 발화하는가)
+  warn_only:
+    - "T-01"   # 청크 크기 분포
+    - "T-02"   # 청크 자율성
+    - "T-06"   # 청크 간 중복
+    - "T-07"   # 카테고리 균형
+    - "T-15"   # 어트랙터 (다주제 청크의 top-1 탈취)
 
 review:
   # 가격·사양은 변동이 빠르다. 분기 재검토를 강제한다.
