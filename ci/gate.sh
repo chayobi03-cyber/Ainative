@@ -67,10 +67,17 @@ else:
     print(f"  재검토 기한 {warn_days}일 내 없음")
 PY
 
-# 4) 감사 리포트 보관 (아티팩트용)
+# 4) 리포트 보관 (아티팩트용 — 여기서는 차단하지 않는다)
+#    검색 품질의 차단은 tests/run_checks.sh의 T-14가 이미 했다.
+#    이 단계는 추이를 남기기 위한 것이며 held-out·음성 질의까지 포함한다.
 python3 tools/kb_audit.py kb/chunks --json out/audit.json --quiet || true
-python3 tools/eval_retrieval.py kb/manifest.jsonl tests/golden_retrieval.jsonl \
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl \
   --mode body --json out/retrieval.json >/dev/null 2>&1 || true
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl \
+  --views body,fields --fuse rrf --expand-hops 1 \
+  --json out/retrieval-heldout.json >/dev/null 2>&1 || true
 
 echo
 if [ "$fail" -eq 0 ]; then

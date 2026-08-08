@@ -264,8 +264,25 @@ def evaluate_negatives(rank, queries: list[str], in_scope: list[float],
 GATE_KEYS = ("ndcg@10", "recall@10")
 
 
+CONFIG_KEYS = ("views", "fuse", "rerank", "expand_hops")
+
+
 def check_baseline(report: dict, baseline: dict, max_drop: float) -> list[str]:
+    """기준선 대비 낙폭을 본다.
+
+    먼저 **설정이 같은지** 확인한다. 뷰나 융합 방식이 다르면 두 수치는 애초에
+    비교 대상이 아니며, 그걸 모른 채 비교하면 게이트가 엉뚱한 것을 통과시키거나
+    막는다. 설정이 달라졌다면 기준선을 다시 만들어야 한다.
+    """
     bad = []
+    for key in CONFIG_KEYS:
+        if key in baseline and baseline[key] != report.get(key):
+            bad.append(
+                f"설정 불일치 {key}: 기준선 {baseline[key]!r} vs 이번 실행 "
+                f"{report.get(key)!r} — 같은 조건이 아니므로 비교할 수 없습니다"
+            )
+    if bad:
+        return bad
     for set_name, base in (baseline.get("sets") or {}).items():
         cur = (report.get("sets") or {}).get(set_name)
         if not cur:
@@ -333,6 +350,8 @@ def main() -> int:
     ap.add_argument("--candidates", type=int, default=24)
     ap.add_argument("--topk", type=int, default=10)
     ap.add_argument("--baseline", type=Path, default=None)
+    ap.add_argument("--write-baseline", type=Path, default=None,
+                    help="현재 수치를 기준선으로 기록한다. 갱신은 반드시 커밋에 포함할 것")
     ap.add_argument("--max-drop", type=float, default=0.02)
     ap.add_argument("--allow-leakage", action="store_true",
                     help="누출 가드를 끈다. 진단 목적으로만 쓰고 수치를 보고하지 말 것")
@@ -442,6 +461,18 @@ def main() -> int:
         a.json.parent.mkdir(parents=True, exist_ok=True)
         a.json.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    if a.write_baseline:
+        snap = {k: report[k] for k in CONFIG_KEYS}
+        snap["generated"] = report["generated"]
+        snap["note"] = ("T-14 회귀 기준선. 갱신은 명시적으로 커밋에 포함해야 한다 — "
+                        "그래야 열화가 조용히 지나가지 않는다.")
+        snap["sets"] = {
+            name: {k: res[k] for k in GATE_KEYS} for name, res in report["sets"].items()
+        }
+        a.write_baseline.write_text(
+            json.dumps(snap, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"기준선 기록: {a.write_baseline}")
+
     if a.baseline:
         if not a.baseline.exists():
             print(f"중단: 기준선 파일이 없습니다: {a.baseline}", file=sys.stderr)
@@ -449,10 +480,11 @@ def main() -> int:
         bad = check_baseline(report, json.loads(a.baseline.read_text(encoding="utf-8")),
                              a.max_drop)
         if bad:
-            print("T-14 검색 회귀 — 기준선 대비 하락:", file=sys.stderr)
+            print("T-14 검색 회귀 게이트 실패:", file=sys.stderr)
             for b in bad:
                 print(f"  {b}", file=sys.stderr)
-            print("  개선이 맞다면 기준선을 갱신해 같은 커밋에 포함하십시오.", file=sys.stderr)
+            print("  수치가 내려간 것이 의도한 결과라면 --write-baseline으로 기준선을 "
+                  "갱신해 같은 커밋에 포함하십시오.", file=sys.stderr)
             return 1
         print(f"T-14 통과 — 기준선 대비 낙폭 {a.max_drop} 이내")
     return 0

@@ -36,4 +36,5 @@ jobs:
           path: |
             out/audit.json
             out/retrieval.json
+            out/retrieval-heldout.json
           if-no-files-found: warn

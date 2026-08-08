@@ -74,6 +74,20 @@ run "골든셋 생성" python3 tools/make_golden.py kb/manifest.jsonl --stats
 # 8. 도구 스크립트 문법
 run "tools/*.py 컴파일" python3 -m compileall -q tools
 
+# 9. T-14 검색 회귀 — 자동 qrels(본문 전용).
+#    여기까지 이 게이트에는 검색 항목이 하나도 없었다. ci/gate.sh가 평가를 돌리긴
+#    했지만 `|| true`라 아티팩트만 남고 아무것도 막지 못했다. Recall이 절반으로
+#    떨어져도 CI는 초록이었다.
+run "T-14 검색 회귀 (자동 qrels)" python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl --mode body \
+  --baseline tests/baseline_retrieval.json --max-drop 0.02
+
+# 10. T-14 검색 회귀 — held-out(실제 질의에 가까운 세트, 프로덕션 설정).
+#     표본이 40건뿐이라 흔들림이 크므로 허용 낙폭을 넓게 잡는다.
+run "T-14 검색 회귀 (held-out)" python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --heldout tests/heldout_queries.jsonl --views body,fields --fuse rrf --expand-hops 1 \
+  --baseline tests/baseline_heldout.json --max-drop 0.05
+
 echo
 if [ "$fail" -eq 0 ]; then
   echo "결과: 통과 — 적재 가능"
