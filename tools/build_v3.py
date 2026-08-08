@@ -440,9 +440,14 @@ def apply_corrections(chunks: list[dict], ledger: Path) -> list[str]:
                     if frm in str(c.get(f, "")):
                         c[f] = str(c[f]).replace(frm, to)
                         hit = True
-                c["retrieval_questions"] = [q.replace(frm, to) for q in c["retrieval_questions"]]
-                if any(frm in q for q in as_list(c.get("retrieval_questions"))):
+                # 치환한 뒤에 `frm`을 찾으면 이미 사라진 문자열을 찾는 것이라
+                # 질문에만 걸리는 정정은 hit이 영원히 False가 되고, 그 정정은
+                # applies=0으로 빌드를 중단시킨다. 치환 전후를 비교해야 한다.
+                before_q = as_list(c.get("retrieval_questions"))
+                after_q = [q.replace(frm, to) for q in before_q]
+                if after_q != before_q:
                     hit = True
+                c["retrieval_questions"] = after_q
             if hit:
                 applied += 1
                 if meta_fresh:
