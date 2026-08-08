@@ -56,11 +56,10 @@ assert len(list(pathlib.Path("kb/_inputs/v1/rag_chunks").glob("*.md"))) == 47, "
 assert len(list(pathlib.Path("kb/_inputs/v23/chunks").glob("*.md"))) == 135, "v2.3 입력 개수 불일치"
 SELFCHK
 
-# 5. T-13이 실제로 결함을 잡는지 자기시험.
-#    한 번도 발화한 적 없는 검사는 작동을 보장하지 않는다. 픽스처는 4종 결함을
-#    일부러 담고 있으며, 감사가 FAIL(exit 1)을 내야 이 단계가 통과한다.
-run "T-13 자기시험(픽스처가 FAIL을 유발)" bash -c \
-  '! python3 tools/kb_audit.py tests/fixtures/t13_broken/chunks --repo-root . --quiet'
+# 5. T-18 게이트 자기시험 — 차단 검사 전체가 실제로 결함을 잡는지.
+#    한 번도 발화한 적 없는 검사는 작동을 보장하지 않는다. 픽스처마다 어느 게이트가
+#    FAIL이어야 하는지를 못박아 두므로, 엉뚱한 검사가 대신 발화해도 통과하지 않는다.
+run "T-18 게이트 자기시험 (T-03/04/05/08/13)" python3 tools/check_gate_selftest.py
 
 # 6. 벡터 DB 페이로드 검증 — 외부 패키지 없이 도는 부분만
 run "업로드 어댑터 dry-run (6개 타깃)" bash -c \
