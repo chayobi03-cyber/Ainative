@@ -39,6 +39,35 @@
 
 ---
 
+## 예약 슬롯 — `context_header`
+
+Contextual Retrieval(임베딩 전에 청크를 문서 안에 위치시키는 50~100 토큰 헤더)용
+슬롯이다. **현재 모든 청크에서 비어 있고 빌더도 생성하지 않는다.**
+
+| 필드 | 타입 | 설명 |
+|---|---|---|
+| `context_header` | str | 이 청크가 어느 문서의 어느 맥락인지 서술. 임베딩 텍스트 최상단에 온다 |
+
+값이 비어 있어도 **측정은 가능하다.** `tools/retrieval.deterministic_context_header()`가
+`source_documents`·`section_path`·`category`·`audience`·`use_cases`로 헤더를
+LLM 없이 조립하므로, 슬롯을 채우기 전에 채울 값어치가 있는지 먼저 잴 수 있다.
+
+```bash
+python3 tools/eval_retrieval.py kb/manifest.jsonl \
+  --heldout tests/heldout_queries.jsonl --views body,fields,index,context --fuse rrf
+```
+
+**아직 채우지 않은 이유**: held-out 40건에서 nDCG@10이 0.3730 → 0.3880으로 올랐지만
+질의 단위로는 11건 개선 / 8건 악화라 잡음과 구분되지 않고, Recall@10과 Success@10은
+오히려 내려갔다. 평균 지표 하나를 근거로 101청크를 재임베딩하지 않는다.
+근거는 `docs/TEST-RESULTS.md` §12.7.
+
+채우기로 결정하면 `build_v3.py`가 같은 함수를 호출해 frontmatter에 적고
+`embeddings.jsonl`의 `embedding_text` 최상단에 넣는다. 값이 있으면 `view_text`가
+생성분 대신 그 값을 쓴다.
+
+---
+
 ## 원문 앵커 · 에셋 (선택 — 이미지 포함 소스 대비)
 
 현재 청크는 전부 텍스트 소스에서 나왔으므로 이 두 필드는 **비어 있다.**

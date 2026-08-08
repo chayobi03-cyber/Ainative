@@ -97,7 +97,42 @@ def load_manifest(path: Path) -> list[dict]:
     return [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def view_text(row: dict, root: Path, view: str) -> str:
+def deterministic_context_header(row: dict, siblings: dict[str, list[dict]]) -> str:
+    """Contextual Retrieval용 상황 헤더를 **LLM 없이** 만든다.
+
+    Anthropic의 Contextual Retrieval은 임베딩 전에 청크를 문서 안에 위치시키는
+    50~100 토큰 헤더를 앞에 붙인다. 보통 LLM으로 생성하지만, 이 KB에는
+    `source_documents`·`section_path`·`category`·`audience`·`use_cases`가 이미 있어
+    **결정론적으로 조립할 수 있다.** 폐쇄망에서 돌고 재현 가능하다는 것이 요점이다.
+
+    실측 결과는 `docs/TEST-RESULTS.md` §12.7에 있다 — **채택하지 않았다.**
+    held-out 40건에서 nDCG@10이 0.3730 → 0.3880으로 올랐지만 질의 단위로는
+    11건 개선 / 8건 악화라 잡음과 구분되지 않는다. 실제 사용자 질의 세트가 들어오면
+    이 함수로 다시 재 볼 것.
+    """
+    doc = (row.get("source_documents") or ["?"])[0]
+    peers = [p["title"] for p in siblings.get(doc, [])
+             if p["chunk_id"] != row["chunk_id"]][:3]
+    parts = [
+        f"{doc} 문서의 {row.get('section_path', '')} 맥락에서 "
+        f"{row.get('title', '')}을(를) 다룬다.",
+        f"분류 {row.get('category', '')}.",
+        f"대상 {' '.join(row.get('audience') or [])}.",
+        f"용도 {' '.join(row.get('use_cases') or [])}.",
+    ]
+    if peers:
+        parts.append(f"같은 문서의 {', '.join(peers)}와 이어진다.")
+    return " ".join(parts)
+
+
+def sibling_map(rows: list[dict]) -> dict[str, list[dict]]:
+    out: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        out[(r.get("source_documents") or ["?"])[0]].append(r)
+    return out
+
+
+def view_text(row: dict, root: Path, view: str, siblings: dict | None = None) -> str:
     """청크 하나를 지정한 뷰의 텍스트로 만든다."""
     if view == "fields":
         # ingestion.yaml의 bm25_fields 설정과 같다: 제목·태그·질문.
@@ -107,8 +142,13 @@ def view_text(row: dict, root: Path, view: str) -> str:
              " ".join(row.get("retrieval_questions", []))]
         )
     if view == "context":
-        # Phase 4에서 채워지는 슬롯. 없으면 빈 문서가 되고 BM25는 그 청크를 못 찾는다.
-        return str(row.get("context_header", "") or "")
+        # frontmatter에 `context_header`가 있으면 그것을 쓰고, 없으면 결정론적으로
+        # 조립한다. 슬롯을 채우지 않은 상태에서도 이 뷰를 측정할 수 있어야
+        # "채울 가치가 있는가"를 재빌드 전에 판단할 수 있다.
+        stored = str(row.get("context_header", "") or "")
+        if stored:
+            return stored
+        return deterministic_context_header(row, siblings if siblings is not None else {})
     if view == "index":
         # 에이전트가 grep으로 훑는 라우팅 표면. INDEX.md 한 행에 해당한다.
         return " ".join(
@@ -122,7 +162,8 @@ def view_text(row: dict, root: Path, view: str) -> str:
 
 def build_view(rows: list[dict], root: Path, view: str) -> dict[str, list[str]]:
     hangul_n = 4 if view == "ngram" else 2
-    return {r["chunk_id"]: tokenize(view_text(r, root, view), hangul_n) for r in rows}
+    sibs = sibling_map(rows) if view == "context" else None
+    return {r["chunk_id"]: tokenize(view_text(r, root, view, sibs), hangul_n) for r in rows}
 
 
 def related_map(rows: list[dict]) -> dict[str, list[str]]:

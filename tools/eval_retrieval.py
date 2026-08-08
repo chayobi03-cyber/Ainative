@@ -61,6 +61,7 @@ from retrieval import (  # noqa: E402
     pairs_to_qrels,
     recall_at_k,
     related_map,
+    sibling_map,
     rrf,
     shingles,
     success_at_k,
@@ -79,7 +80,8 @@ LEAKAGE_THRESHOLD = 0.10
 # ─────────────────────────────────────────────────────────────
 def leakage_rate(rows: list[dict], root: Path, view: str, qrels: dict) -> float:
     """질의가 정답 문서의 뷰 텍스트에 축자적으로 등장하는 비율."""
-    texts = {r["chunk_id"]: view_text(r, root, view).lower() for r in rows}
+    sibs = sibling_map(rows) if view == "context" else None
+    texts = {r["chunk_id"]: view_text(r, root, view, sibs).lower() for r in rows}
     hit = total = 0
     for q, qrel in qrels.items():
         gold = [c for c, g in qrel.items() if g > 0]
