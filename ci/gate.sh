@@ -45,27 +45,10 @@ else
   python3 tools/check_owners.py || true
 fi
 
-# 3) 재검토 기한 임박 — YAML은 알림을 보내지 않으므로 CI가 대신 알린다
-python3 - "$EXPIRY_WARN_DAYS" <<'PY'
-import re, sys
-from datetime import date
-warn_days = int(sys.argv[1])
-text = open("kb/ingestion.yaml", encoding="utf-8").read()
-today = date.today()
-hits = []
-for m in re.finditer(r'(recheck_by|next_review):\s*"?(\d{4}-\d{2}-\d{2})"?', text):
-    d = date.fromisoformat(m.group(2))
-    left = (d - today).days
-    if left <= warn_days:
-        hits.append((left, m.group(2)))
-if hits:
-    for left, d in sorted(hits):
-        state = "만료" if left < 0 else f"{left}일 남음"
-        print(f"  재검토 기한 임박: {d} ({state})")
-    print("  → tools/make_calendar.py 로 캘린더에 등록했는지 확인하십시오.")
-else:
-    print(f"  재검토 기한 {warn_days}일 내 없음")
-PY
+# 3) 재검토 기한 — 상세 표를 남긴다.
+#    차단 판정은 tests/run_checks.sh의 T-16이 이미 했으므로 여기서는 보고만 한다.
+python3 tools/check_freshness.py --warn-days "$EXPIRY_WARN_DAYS" \
+  --json out/freshness.json || true
 
 # 4) 리포트 보관 (아티팩트용 — 여기서는 차단하지 않는다)
 #    검색 품질의 차단은 tests/run_checks.sh의 T-14가 이미 했다.

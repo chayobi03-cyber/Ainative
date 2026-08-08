@@ -37,4 +37,5 @@ jobs:
             out/audit.json
             out/retrieval.json
             out/retrieval-heldout.json
+            out/freshness.json
           if-no-files-found: warn
