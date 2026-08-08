@@ -200,28 +200,60 @@ def evaluate(rank, qrels: dict, meta: dict) -> dict:
     return out
 
 
-def evaluate_negatives(rank, queries: list[str], floor: float) -> dict:
-    """KB 범위 밖 질의에 대해 무언가를 반환한 비율.
+def auc(pos: list[float], neg: list[float]) -> float:
+    """무작위 범위-안 질의가 무작위 범위-밖 질의보다 높은 점수를 받을 확률.
 
-    어트랙터 청크는 정의상 관련 없는 질의에도 반응하므로, 이 지표가
-    T-15의 두 번째 각도다. 점수 하한은 held-out에서 튜닝한다.
+    Mann-Whitney U 통계다. 0.5면 점수에 신호가 전혀 없다는 뜻이고,
+    1.0이면 완전히 분리된다는 뜻이다. 임의의 하한 하나를 고르는 것보다
+    **하한이라는 것이 가능하기는 한가**를 먼저 답하는 지표다.
     """
-    answered = 0
+    if not pos or not neg:
+        return 0.0
+    wins = sum(
+        1.0 if p > n else 0.5 if p == n else 0.0
+        for p in pos for n in neg
+    )
+    return wins / (len(pos) * len(neg))
+
+
+def evaluate_negatives(rank, queries: list[str], in_scope: list[float],
+                       floors=(4, 6, 8, 10, 12, 14, 16, 20)) -> dict:
+    """KB 범위 밖 질의에 무언가를 답해버리는 정도.
+
+    어트랙터 청크는 정의상 관련 없는 질의에도 반응하므로 이 지표가 T-15의
+    두 번째 각도다.
+
+    단일 하한에서의 오응답률만 내지 않는 이유
+        하한을 하나 고르면 그 값이 정당한지 알 수 없다. 범위 안 질의를 함께 받아
+        분리도(AUC)와 하한별 맞교환표를 낸다. 분리도가 0.5 근처면 **어떤 하한도
+        작동하지 않는다**는 뜻이고, 그때 하한을 설정에 적어두면 작동하지 않는
+        통제를 작동한다고 적는 셈이 된다.
+    """
     top: Counter = Counter()
     scores = []
     for q in queries:
         ranked, lex = rank(q)
         scores.append(round(lex, 3))
-        if ranked and lex >= floor:
-            answered += 1
+        if ranked:
             top[ranked[0][0]] += 1
     n = len(queries)
+    tradeoff = [
+        {
+            "floor": f,
+            "false_answer_rate": round(sum(1 for x in scores if x >= f) / n, 4) if n else 0.0,
+            "in_scope_abstain_rate": round(
+                sum(1 for x in in_scope if x < f) / len(in_scope), 4) if in_scope else 0.0,
+        }
+        for f in floors
+    ]
+    srt = sorted(scores)
     return {
         "n": n,
-        "score_floor": floor,
-        "false_answer_rate": round(answered / n, 4) if n else 0.0,
-        "top_score_p50": sorted(scores)[n // 2] if n else 0.0,
+        "separability_auc": round(auc(in_scope, scores), 4),
+        "top_score_p50": srt[n // 2] if n else 0.0,
         "top_score_max": max(scores) if scores else 0.0,
+        "in_scope_p50": round(sorted(in_scope)[len(in_scope) // 2], 3) if in_scope else 0.0,
+        "floor_tradeoff": tradeoff,
         "most_attracted": top.most_common(5),
     }
 
@@ -300,7 +332,6 @@ def main() -> int:
     ap.add_argument("--expand-penalty", type=float, default=0.5)
     ap.add_argument("--candidates", type=int, default=24)
     ap.add_argument("--topk", type=int, default=10)
-    ap.add_argument("--score-floor", type=float, default=3.0)
     ap.add_argument("--baseline", type=Path, default=None)
     ap.add_argument("--max-drop", type=float, default=0.02)
     ap.add_argument("--allow-leakage", action="store_true",
@@ -388,11 +419,19 @@ def main() -> int:
     if a.negatives:
         neg = [json.loads(l)["query"]
                for l in a.negatives.read_text(encoding="utf-8").splitlines() if l.strip()]
-        res = evaluate_negatives(rank, neg, a.score_floor)
+        # 분리도를 재려면 범위 안 질의의 점수 분포가 필요하다.
+        in_scope = [rank(q)[1] for qrels, _ in sets.values() for q in qrels]
+        res = evaluate_negatives(rank, neg, in_scope)
         report["negatives"] = res
-        print(f"[음성 질의 — KB 범위 밖]  n={res['n']}  점수 하한={res['score_floor']}")
-        print(f"  오응답률={res['false_answer_rate']}  "
-              f"1위 점수 중앙값={res['top_score_p50']}  최대={res['top_score_max']}")
+        print(f"[음성 질의 — KB 범위 밖]  n={res['n']}")
+        print(f"  분리도 AUC={res['separability_auc']}  "
+              f"(0.5 = 점수에 신호 없음 → 어떤 하한도 작동하지 않음)")
+        print(f"  1위 점수 중앙값: 범위 안={res['in_scope_p50']}  "
+              f"범위 밖={res['top_score_p50']}  (범위 밖 최대={res['top_score_max']})")
+        print("  하한   범위밖 오응답   범위안 기권(손실)")
+        for t in res["floor_tradeoff"]:
+            print(f"  {t['floor']:4.0f}       {t['false_answer_rate']:.2f}"
+                  f"            {t['in_scope_abstain_rate']:.2f}")
         if res["most_attracted"]:
             print("  범위 밖 질의를 가장 많이 끌어간 청크:")
             for cid, c in res["most_attracted"]:

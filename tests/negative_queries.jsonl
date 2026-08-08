@@ -1,0 +1,20 @@
+{"query": "연차 신청은 어디서 하나요", "qrel": {}, "origin": "llm-authored", "note": "인사 제도 — KB 범위 밖"}
+{"query": "사무실 주차 등록 절차를 알려주세요", "qrel": {}, "origin": "llm-authored", "note": "총무 — KB 범위 밖"}
+{"query": "쿠버네티스 파드가 CrashLoopBackOff 상태인데 원인이 뭔가요", "qrel": {}, "origin": "llm-authored", "note": "인프라 운영 — KB는 에이전트 운영만 다룬다"}
+{"query": "오라클 옵티마이저가 인덱스를 안 타는데 힌트를 어떻게 주나요", "qrel": {}, "origin": "llm-authored", "note": "RDBMS 튜닝 — KB 범위 밖"}
+{"query": "리액트에서 리렌더링을 줄이려면 어떤 훅을 써야 하나요", "qrel": {}, "origin": "llm-authored", "note": "프론트엔드 — 'hook'이 KB 용어와 겹치는 함정 질의"}
+{"query": "법인카드 사용 한도가 얼마인가요", "qrel": {}, "origin": "llm-authored", "note": "경비 규정 — 'budget/한도'가 KB 용어와 겹치는 함정 질의"}
+{"query": "건강검진 대상자는 어떻게 확인하나요", "qrel": {}, "origin": "llm-authored", "note": "복리후생 — KB 범위 밖"}
+{"query": "TLS 인증서 갱신 자동화는 어떻게 설정하나요", "qrel": {}, "origin": "llm-authored", "note": "인프라 보안 — KB의 인증 항목과 다르다"}
+{"query": "엑셀에서 피벗 테이블을 만드는 방법을 알려주세요", "qrel": {}, "origin": "llm-authored", "note": "오피스 도구 — KB 범위 밖"}
+{"query": "출장 정산 영수증은 며칠 안에 제출해야 하나요", "qrel": {}, "origin": "llm-authored", "note": "경비 규정 — KB 범위 밖"}
+{"query": "카프카 컨슈머 랙이 계속 쌓이는데 어떻게 줄이나요", "qrel": {}, "origin": "llm-authored", "note": "데이터 파이프라인 — 'pipeline'이 KB 용어와 겹치는 함정 질의"}
+{"query": "신입 개발자 채용 면접 질문지를 어디서 받나요", "qrel": {}, "origin": "llm-authored", "note": "채용 — '온보딩'과 인접하지만 KB 범위 밖"}
+{"query": "회의실 예약 시스템 계정을 어떻게 발급받나요", "qrel": {}, "origin": "llm-authored", "note": "총무 — '계정 발급'이 KB 용어와 겹치는 함정 질의"}
+{"query": "안드로이드 앱 스토어 심사 반려 사유를 어떻게 확인하나요", "qrel": {}, "origin": "llm-authored", "note": "모바일 배포 — '배포/심사'가 KB 용어와 겹치는 함정 질의"}
+{"query": "사내 위키 편집 권한은 누구한테 요청하나요", "qrel": {}, "origin": "llm-authored", "note": "사내 시스템 — '권한 요청'이 KB 용어와 겹치는 함정 질의"}
+{"query": "재택근무 신청 기준이 어떻게 되나요", "qrel": {}, "origin": "llm-authored", "note": "인사 제도 — KB 범위 밖"}
+{"query": "테라폼으로 VPC 서브넷을 나누는 모범 사례가 뭔가요", "qrel": {}, "origin": "llm-authored", "note": "클라우드 인프라 — '모범 사례'가 KB 용어와 겹치는 함정 질의"}
+{"query": "노트북이 느려졌는데 IT 헬프데스크 연락처가 어떻게 되나요", "qrel": {}, "origin": "llm-authored", "note": "IT 지원 — KB 범위 밖"}
+{"query": "특허 출원 절차와 사내 보상 규정을 알려주세요", "qrel": {}, "origin": "llm-authored", "note": "법무 — KB 범위 밖"}
+{"query": "포토샵에서 배경을 투명하게 만드는 방법이 있나요", "qrel": {}, "origin": "llm-authored", "note": "디자인 도구 — KB 범위 밖"}
