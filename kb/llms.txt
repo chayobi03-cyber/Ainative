@@ -1,6 +1,6 @@
 # Ainative
 
-> 사내 AI 협업(Claude Code / Gemini CLI / MCP / Skills) 지식 베이스. 청크 100개를 주제별로 나눠 두었습니다. 각 링크는 저장소 안의 마크다운 파일이며 그 자체로 완결된 문서입니다.
+> 사내 AI 협업(Claude Code / Gemini CLI / MCP / Skills) 지식 베이스. 청크 101개를 주제별로 나눠 두었습니다. 각 링크는 저장소 안의 마크다운 파일이며 그 자체로 완결된 문서입니다.
 
 생성물입니다. `python3 tools/make_index.py`로 다시 만듭니다.
 
@@ -34,6 +34,7 @@
 
 ## specification
 
+- [MCP 2026-07-28 파괴적 변경 전체 목록](chunks/v3-mcp-2026-07-28-changes.md): MCP 2026-07-28에서 무엇이 깨지나요? (verified)
 - [MCP 사양 현황과 주요 리비전 (2024~2026)](chunks/v3-mcp-spec.md): MCP 사양의 주요 버전은? (verified)
 - [MCP 전송 방식: stdio와 Streamable HTTP](chunks/v3-mcp-transport.md): MCP 전송 방식은 무엇이 있는가? (verified)
 - [MCP 사양 버전 마이그레이션 가이드](chunks/v3-mcp-version-migration.md): MCP 사양을 어느 버전으로 올려야 하나요? (draft)

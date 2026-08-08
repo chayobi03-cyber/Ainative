@@ -2,7 +2,7 @@
 
 <!-- 생성물입니다. 직접 고치지 마십시오. `python3 tools/make_index.py`로 다시 만듭니다. 내용을 바꾸려면 kb/authored/ 또는 빌더를 고치고 재빌드하십시오. -->
 
-청크 100개. 한 줄에 한 청크이므로 `grep`으로 바로 찾을 수 있습니다.
+청크 101개. 한 줄에 한 청크이므로 `grep`으로 바로 찾을 수 있습니다.
 
 ```bash
 grep -i 'hook' kb/INDEX.md          # 주제로 찾기
@@ -85,8 +85,11 @@ grep -i 'verified' kb/INDEX.md      # 검증된 것만
   태그: agents-md, compact, context-engineering, llms-txt, memory  
   예시 질문: 컨텍스트 엔지니어링의 보안 고려사항은?
 
-## specification (3)
+## specification (4)
 
+- `v3-mcp-2026-07-28-changes` — MCP 2026-07-28 파괴적 변경 전체 목록 [verified] → `chunks/v3-mcp-2026-07-28-changes.md`  
+  태그: MCP, 2026-07-28, stateless, MRTR, server/discover, subscriptions/listen, resultType, CIMD, RFC 9207, SEP  
+  예시 질문: MCP 2026-07-28에서 무엇이 깨지나요?
 - `v3-mcp-spec` — MCP 사양 현황과 주요 리비전 (2024~2026) [verified] → `chunks/v3-mcp-spec.md`  
   태그: MCP, specification, versioning, protocol, 2025-11-25  
   예시 질문: MCP 사양의 주요 버전은?

@@ -19,7 +19,7 @@ supersedes: ["rag-mcp-spec-001"]
 # MCP 사양 현황과 주요 리비전 (2024~2026)
 
 ## 한 줄 요약
-MCP(Model Context Protocol)는 날짜 기반 버저닝을 사용하며, 2024-11-05 초기 stable부터 2026-07-28 stable까지 빠르게 진화하고 있다. 사내 구축 시 2025-11-25 stable을 기준으로 pinning할 것을 권장한다.
+MCP(Model Context Protocol)는 날짜 기반 버저닝을 사용하며, 2024-11-05 초기 stable부터 2026-07-28 stable까지 빠르게 진화하고 있다. 현재 최신 stable은 2026-07-28이다. 보수적으로 클라이언트 호환 범위를 넓게 잡아야 할 때만 2025-11-25 pinning을 택한다.
 
 ## 언제 참고하나
 - 새 MCP 서버를 설계할 때 사양 버전을 선택해야 할 때
@@ -33,8 +33,8 @@ MCP(Model Context Protocol)는 날짜 기반 버저닝을 사용하며, 2024-11-
 - **2024-11-05**: 초기 stable. client-server 모델, tools/resources/prompts primitive 확립.
 - **2025-03-26**: Streamable HTTP transport 도입, OAuth 2.1 authorization, **HTTP+SSE deprecated**.
 - **2025-06-18**: structured tool output, elicitation(서버가 사용자에게 추가 입력 요청), resource links, OAuth Resource Server 분류, RFC 8707 Resource Indicators, JSON-RPC 배칭 제거.
-- **2025-11-25 (최신 stable)**: OpenID Connect Discovery, tools/resources/prompts용 icons(SEP-973), incremental scope consent(SEP-835), URL mode elicitation(SEP-1036), sampling에 tool calling(SEP-1577), OAuth Client ID Metadata Documents(CIMD, SEP-991), experimental Tasks.
-- **2026-07-28 stable**: stateless core, MCP Apps, Tasks를 확장으로 이동, 공식 deprecation 라이프사이클 정책. Roots/Sampling/Logging이 deprecated 예정으로 표시됨. Streamable HTTP는 Mcp-Method·Mcp-Name 헤더 요구(SEP-2243), list/resource 결과에 ttlMs·cacheScope(SEP-2549) 추가.
+- **2025-11-25**: OpenID Connect Discovery, tools/resources/prompts용 icons(SEP-973), incremental scope consent(SEP-835), URL mode elicitation(SEP-1036), sampling에 tool calling(SEP-1577), OAuth Client ID Metadata Documents(CIMD, SEP-991), experimental Tasks.
+- **2026-07-28 stable**: stateless core, MCP Apps, Tasks를 확장으로 이동, 공식 deprecation 라이프사이클 정책. Roots/Sampling/Logging이 deprecated 됐다(SEP-2577, 제거까지 최소 12개월 유예). `initialize`/`notifications/initialized` 핸드셰이크와 `Mcp-Session-Id`가 제거되고 `server/discover` RPC가 신설됐으며(SEP-2575), 서버 개시 요청은 Multi Round-Trip Requests로 대체됐다(SEP-2322). `ping`·`logging/setLevel`·`notifications/roots/list_changed`가 제거됐고 DCR은 CIMD 선호로 deprecated 됐다. Streamable HTTP는 Mcp-Method·Mcp-Name 헤더 요구(SEP-2243), list/resource 결과에 ttlMs·cacheScope(SEP-2549) 추가.
 
 ### Primitive 구성
 - **Tools**: 모델이 호출하는 함수 (name + description + JSON Schema). 2025-06-18부터 structured output·resource link 선언 가능.
@@ -43,6 +43,6 @@ MCP(Model Context Protocol)는 날짜 기반 버저닝을 사용하며, 2024-11-
 - 클라이언트가 서버에 제공하는 역량: Sampling, Elicitation(2025-06-18 신규), Roots(작업 가능 디렉터리/URI 통지).
 
 ## 운영 체크리스트
-- [ ] 사내 MCP 서버의 사양 버전을 2025-11-25 stable로 pinning했는가
+- [ ] 사내 MCP 서버의 사양 버전을 명시적으로 pinning했는가 (최신 stable 2026-07-28, 보수적 선택 2025-11-25)
 - [ ] 2026-07-28 stable 채택 시 stateless core·Roots/Sampling deprecated 대응 계획이 있는가
 - [ ] 신규 구현에서 deprecated 기능(HTTP+SSE, Roots, Sampling)을 사용하지 않았는가

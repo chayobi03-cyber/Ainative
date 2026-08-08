@@ -54,14 +54,27 @@ sticky routing과 공유 세션 저장소가 프로토콜 계층에서 불필요
 - 세션 ID를 비결정론적으로 생성하고 사용자 정보에 바인딩
 - 와일드카드 스코프(`*`, `all`, `full-access`) 제거
 
-**주의**: RFC 8707 `resource`의 MUST 요구는 완화 논의가 진행 중이고, Dynamic Client
-Registration은 2025-11-25에서 SHOULD→MAY로 강등되며 CIMD로 대체되었다.
+추가로 2026-07-28에서 확정된 항목(사양 changelog 원문 대조):
+- 인가 서버가 RFC 9207 `iss`를 내려주고, 클라이언트가 **코드 교환 전에** 기록해 둔
+  issuer와 대조한다(SEP-2468)
+- DCR 사용 시 `application_type`을 명시한다 — OIDC redirect URI 충돌 회피(SEP-837)
+- 자격증명을 **issuer를 키로** 보관한다. 인가 서버 간 재사용 금지, 서버 변경 시 재등록(SEP-2352)
+
+**주의**: RFC 8707 `resource`의 MUST 요구는 완화 논의가 진행 중이다.
+Dynamic Client Registration은 2025-11-25에서 SHOULD→MAY로 강등된 데 이어
+**2026-07-28에서 정식 deprecated 됐다**(대체: Client ID Metadata Documents).
+하위 호환을 위해 남아 있을 뿐이므로 신규 구현은 CIMD로 간다.
 인증 구현 직전에 해당 리비전 원문을 다시 읽는다.
 
 ### 3. 상태 제거 — 2026-07-28의 핵심 변화
 stateless core를 흡수한다. 서버를 stateless로 만들면 수평 확장 시 sticky routing이
 불필요해지고, git worktree 병렬 세션 충돌도 함께 사라진다.
 상태가 꼭 필요하면 외부 저장소로 빼고 문서화한다.
+
+여기서 함께 깨지는 것들이 있다 — **라이브러리 업그레이드만으로 끝나지 않는다.**
+`server/discover` 구현, 서버 개시 요청의 MRTR 전환, `subscriptions/listen` 전환,
+`ping`·`logging/setLevel` 제거 대응이 같은 단계에 묶인다.
+항목별 상세와 SEP 번호는 `v3-mcp-2026-07-28-changes`에 있다.
 
 ### 4. deprecated 항목 정리
 2026-07-28에서 Roots / Sampling / Logging이 deprecated 됐다. 공식 deprecation 정책상

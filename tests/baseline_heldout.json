@@ -7,12 +7,12 @@
   "fuse": "rrf",
   "rerank": "none",
   "expand_hops": 1,
-  "generated": "2026-08-08T20:09:17Z",
+  "generated": "2026-08-08T20:15:50Z",
   "note": "T-14 회귀 기준선. 갱신은 명시적으로 커밋에 포함해야 한다 — 그래야 열화가 조용히 지나가지 않는다.",
   "sets": {
     "heldout:llm-authored": {
-      "ndcg@10": 0.3772,
-      "recall@10": 0.4833
+      "ndcg@10": 0.373,
+      "recall@10": 0.475
     }
   }
 }

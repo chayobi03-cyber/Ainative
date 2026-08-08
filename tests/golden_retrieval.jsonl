@@ -392,6 +392,11 @@
 {"query": "폐쇄망에서 쓸 수 있는 한국어 임베딩은?", "expected_chunk_id": "v3-korean-rag", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "한국어는 토큰이 얼마나 더 드나요?", "expected_chunk_id": "v3-korean-rag", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "한영 혼용 텍스트 검색은 어떻게 하나요?", "expected_chunk_id": "v3-korean-rag", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
+{"query": "MCP 2026-07-28에서 무엇이 깨지나요?", "expected_chunk_id": "v3-mcp-2026-07-28-changes", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "verified"}
+{"query": "서버 개시 요청이 없어졌다는데 대신 무엇을 쓰나요?", "expected_chunk_id": "v3-mcp-2026-07-28-changes", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "verified"}
+{"query": "MCP에서 ping이 사라졌나요?", "expected_chunk_id": "v3-mcp-2026-07-28-changes", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "verified"}
+{"query": "resultType은 무엇이고 왜 필수가 됐나요?", "expected_chunk_id": "v3-mcp-2026-07-28-changes", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "verified"}
+{"query": "MCP 알림 구독은 이제 어떻게 하나요?", "expected_chunk_id": "v3-mcp-2026-07-28-changes", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "verified"}
 {"query": "MCP 사양을 어느 버전으로 올려야 하나요?", "expected_chunk_id": "v3-mcp-version-migration", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "SSE에서 Streamable HTTP로 어떻게 옮기나요?", "expected_chunk_id": "v3-mcp-version-migration", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "2026-07-28로 가면 무엇이 깨지나요?", "expected_chunk_id": "v3-mcp-version-migration", "category": "specification", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}

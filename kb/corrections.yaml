@@ -32,6 +32,28 @@ corrections:
     set_meta:
       freshness: "2026-08"
 
+  - id: C-002
+    date: "2026-08-08"
+    reason: >
+      `v3-mcp-spec`이 2025-11-25를 "최신 stable"로 표기하면서 같은 목록에 2026-07-28
+      stable을 적어 자체 모순이었다(C-001이 RC→stable 표기만 고치고 "최신" 라벨은
+      그대로 뒀다). 또 Roots/Sampling/Logging을 "deprecated 예정"으로 적었으나
+      사양 원문은 이미 Deprecated 상태로 분류하고 제거까지 12개월 유예를 규정한다.
+      2026-07-28 변경점 목록도 실제 changelog의 일부만 담고 있어 보강한다.
+    verified_source: "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/docs/specification/2026-07-28/changelog.mdx"
+    verified_by: "사양 저장소 changelog 원문 직접 확인 (1차 출처)"
+    replace:
+      - from: "- **2025-11-25 (최신 stable)**:"
+        to: "- **2025-11-25**:"
+      - from: "사내 구축 시 2025-11-25 stable을 기준으로 pinning할 것을 권장한다."
+        to: "현재 최신 stable은 2026-07-28이다. 보수적으로 클라이언트 호환 범위를 넓게 잡아야 할 때만 2025-11-25 pinning을 택한다."
+      - from: "Roots/Sampling/Logging이 deprecated 예정으로 표시됨."
+        to: "Roots/Sampling/Logging이 deprecated 됐다(SEP-2577, 제거까지 최소 12개월 유예). `initialize`/`notifications/initialized` 핸드셰이크와 `Mcp-Session-Id`가 제거되고 `server/discover` RPC가 신설됐으며(SEP-2575), 서버 개시 요청은 Multi Round-Trip Requests로 대체됐다(SEP-2322). `ping`·`logging/setLevel`·`notifications/roots/list_changed`가 제거됐고 DCR은 CIMD 선호로 deprecated 됐다."
+      - from: "- [ ] 사내 MCP 서버의 사양 버전을 2025-11-25 stable로 pinning했는가"
+        to: "- [ ] 사내 MCP 서버의 사양 버전을 명시적으로 pinning했는가 (최신 stable 2026-07-28, 보수적 선택 2025-11-25)"
+    set_meta:
+      freshness: "2026-08"
+
 # 검증했고 원문이 정확했던 항목. 고칠 것이 없어도 검증 사실 자체를 기록한다.
 verified_no_change:
   - id: V-001
@@ -77,12 +99,40 @@ verified_no_change:
     verified_source: "https://platform.claude.com/docs/en/about-claude/pricing"
     chunks: ["v3-prompt-caching"]
 
+  - id: V-005
+    date: "2026-08-08"
+    claim: "MCP 2026-07-28이 정식 stable이며 stateless core·Mcp-Method/Mcp-Name 헤더(SEP-2243)·ttlMs/cacheScope(SEP-2549)를 도입했다는 기존 서술"
+    result: 정확 — 다만 불완전
+    evidence: >
+      사양 저장소 changelog 원문으로 확인했다. GitHub 릴리스는
+      "This release marks the stable release of the 2026-07-28 revision"으로 명시한다.
+      기존에 적혀 있던 항목(stateless core, Tasks 확장 이동, Mcp-Method/Mcp-Name,
+      ttlMs/cacheScope, deprecation 라이프사이클 12개월)은 전부 원문과 일치했다.
+      그러나 changelog에는 KB가 전혀 다루지 않은 항목이 다수 있었다 —
+      `server/discover` RPC 신설, `subscriptions/listen`이 HTTP GET과
+      resources/subscribe를 대체, `ping`·`logging/setLevel`·
+      `notifications/roots/list_changed` 제거, 모든 결과에 `resultType` 필수,
+      MRTR(`InputRequiredResult`/`inputRequests`/`inputResponses`),
+      SSE 재개(`Last-Event-ID`) 제거, RFC 9207 `iss` 검증,
+      DCR의 정식 deprecated. 누락분은 kb/authored/mcp-2026-07-28-changes.md로 집필했다.
+    verified_source: "https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/main/docs/specification/2026-07-28/changelog.mdx"
+    chunks: ["v3-mcp-spec", "v3-mcp-version-migration"]
+
 # 검증을 시도했으나 접근이 막혀 확인하지 못한 항목. 미확인 상태를 명시적으로 남긴다.
 unverified:
   - id: U-001
     claim: "MCP 사양 필수 통제 문구(토큰 패스스루 금지, RFC 8707 audience 검증 등)의 원문 일치"
-    blocker: "modelcontextprotocol.io 사양 페이지가 프록시에서 HTTP 403"
-    next_action: "네트워크 가용 환경에서 2026-07-28 사양 원문 대조"
+    blocker: "modelcontextprotocol.io 사양 페이지가 프록시에서 여전히 HTTP 403"
+    status: "부분 해소 (2026-08-08)"
+    partial_resolution: >
+      사양 저장소의 원문 마크다운은 raw.githubusercontent.com 경로로 접근된다.
+      2026-07-28 changelog를 이 경로로 직접 확인해 C-002와 V-005를 기록했다
+      (경로: modelcontextprotocol/modelcontextprotocol/main/docs/specification/2026-07-28/changelog.mdx).
+      changelog는 변경점의 1차 출처이지만 **통제 문구 전문은 아니다.**
+      토큰 패스스루 금지·audience 검증의 정확한 MUST/SHOULD 문구 대조는 아직 미완이다.
+    next_action: >
+      같은 raw 경로에서 basic/authorization.mdx 등 사양 본문을 받아 통제 문구를 대조할 것.
+      렌더링된 사이트가 필요하지 않다는 점이 이 항목의 실질적 해법이었다.
   - id: U-002
     claim: "FastMCP 시장 점유율 70%·하루 100만 다운로드"
     blocker: "원본이 이미 벤더 자체 주장으로 표기함. 1차 검증 수단 없음"
