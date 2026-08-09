@@ -77,9 +77,15 @@ tokens ≈ 1.45·(한글 음절 수)
 | **T-16** | 재검토 기한 | `review_by`·`recheck_by` 초과 후 유예 14일까지 WARN, 이후 차단 | **FAIL** |
 | **T-17** | 에이전트 표면 | SKILL.md 규격 준수 + 라우팅 색인이 manifest와 동기 | **FAIL** |
 | **T-18** | 게이트 자기시험 | 차단 검사 5종이 각자의 결함 픽스처에서 정확히 발화 | **FAIL** |
+| **T-19** | 벤더 역량 행렬 | 모든 (기능 × 벤더) 셀에 근거 표기. 근거 없는 단정 0건 | **FAIL** |
 
 T-14 이후는 `kb_audit.py`가 아니라 각 전용 도구가 판정한다
-(`eval_retrieval.py`, `check_freshness.py`, `check_agent_surface.py`, `check_gate_selftest.py`).
+(`eval_retrieval.py`, `check_freshness.py`, `check_agent_surface.py`,
+`check_gate_selftest.py`, `check_vendor_matrix.py`).
+
+**T-19가 검사하는 것은 지원 여부가 아니라 근거 표기다.** `unknown`은 통과하고
+`support: yes` + `verified: unknown`은 막힌다 — 모르는 것을 모른다고 적는 건 정상이고,
+확인하지 않은 것을 확인한 것처럼 적는 게 사고이기 때문이다.
 
 필수 필드: `chunk_id`, `title`, `category`, `tags`, `retrieval_questions`
 권장 필드: `priority`, `confidence`, `freshness`, `related_chunks`, `audience`

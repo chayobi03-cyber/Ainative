@@ -68,7 +68,19 @@ kb/INDEX.md         kb/llms.txt
 
 융합·재순위·그래프 확장 수치는 **held-out 세트에서만** 의미가 있다.
 
-### 7. 비밀은 넣지 않는다
+### 7. 벤더를 넘어 지침을 옮기지 않는다
+
+한 벤더에서 확인한 절차가 다른 벤더에서도 되는지는 **확인하기 전까지 모른다.**
+`kb/vendors.yaml`이 기능별 지원 여부와 **검증 등급**을 기록한다.
+
+- 지침에 벤더별 차이가 있으면 행렬에 항목이 있어야 한다
+- `verified: secondary`나 `unknown`인 것을 확정처럼 쓰지 않는다
+- 사내에서 실제로 돌려 확인했으면 `internal-test`로 올리고 날짜를 남긴다
+
+현재 28셀 중 확인된 것은 5개다. **미확인이 많은 것은 결함이 아니고,
+근거 없이 지원한다고 적는 것이 결함이다.**
+
+### 8. 비밀은 넣지 않는다
 
 토큰·자격증명·사내 호스트명은 이 저장소의 어느 파일에도, 커밋 메시지에도 넣지 않는다.
 사내 캡처 이미지는 `screened: true` 없이는 빌드가 거부한다.
@@ -89,6 +101,7 @@ kb/INDEX.md         kb/llms.txt
 | 검색 평가 (자동 세트) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl` |
 | 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
+| 벤더 역량 행렬 | `python3 tools/check_vendor_matrix.py --report` |
 | 최적화 — 진단 | `python3 tools/optimize.py propose --run R-00N --top 5` |
 | 최적화 — 채점 | `python3 tools/optimize.py score --run R-00N --candidates cands.jsonl` |
 | 최적화 — 자기시험 | `python3 tools/optimize.py selftest` |
@@ -110,7 +123,7 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 
 **차단(FAIL)**: T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성,
 T-08 포맷, T-13 에셋 무결성, T-14 검색 회귀, T-16 재검토 기한, T-17 에이전트 표면,
-T-18 게이트 자기시험
+T-18 게이트 자기시험, T-19 벤더 역량 행렬
 
 **경고(WARN, 차단 안 함)**: T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형,
 T-15 어트랙터

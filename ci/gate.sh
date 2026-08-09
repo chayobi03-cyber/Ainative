@@ -50,6 +50,9 @@ fi
 python3 tools/check_freshness.py --warn-days "$EXPIRY_WARN_DAYS" \
   --json out/freshness.json || true
 
+# 3-2) 벤더 커버리지 — 미확인이 어디에 몰려 있는지 보고만 한다 (차단은 T-19가 했다)
+python3 tools/check_vendor_matrix.py --report || true
+
 # 4) 리포트 보관 (아티팩트용 — 여기서는 차단하지 않는다)
 #    검색 품질의 차단은 tests/run_checks.sh의 T-14가 이미 했다.
 #    이 단계는 추이를 남기기 위한 것이며 held-out·음성 질의까지 포함한다.

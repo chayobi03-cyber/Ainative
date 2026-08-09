@@ -1,0 +1,36 @@
+# 결함 픽스처 — T-19가 잡아야 할 것을 일부러 담고 있다.
+version: "0.0"
+
+vendors:
+  claude-code:
+    display: "Claude Code"
+  gemini-cli:
+    display: "Gemini CLI"
+
+capabilities:
+  - id: bare-yes
+    display: "근거 없이 지원한다고 단정한 셀"
+    matrix:
+      claude-code:
+        support: yes
+        verified: unknown
+      gemini-cli:
+        support: unknown
+        verified: unknown
+
+  - id: missing-vendor
+    display: "벤더가 빠진 행"
+    matrix:
+      claude-code:
+        support: yes
+        verified: primary
+
+  - id: bad-value
+    display: "허용되지 않은 값"
+    matrix:
+      claude-code:
+        support: maybe
+        verified: primary
+      gemini-cli:
+        support: partial
+        verified: primary
