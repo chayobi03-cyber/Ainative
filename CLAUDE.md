@@ -53,7 +53,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── retrieval.py       # 검색 원시 연산 (BM25·RRF·MMR·그래프 확장·지표)
 │   ├── optimize.py        # OPRO/GEPA 최적화 하네스 (LLM 비호출, 벤더 무관)
 │   ├── make_index.py      # manifest → INDEX.md / llms.txt
-│   ├── check_consistency.py   # 저장소 정합성 5종
+│   ├── check_consistency.py   # 저장소 정합성 6종
 │   ├── check_gate_selftest.py # T-18 게이트 자기시험
 │   ├── check_agent_surface.py # T-17 SKILL.md 규격·색인 동기
 │   ├── check_freshness.py # T-16 재검토 기한

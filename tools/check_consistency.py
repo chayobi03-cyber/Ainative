@@ -194,12 +194,50 @@ verified_no_change: []
     return []
 
 
+def check_preservation() -> list[str]:
+    """병합 보존 불변식이 살아 있는지 — 유일하게 자기시험이 없던 안전장치.
+
+    `build_v3.convert_v23`의 assert는 입력 조각이 출력에 정확히 1회씩 나오는지 본다.
+    청크 2개를 조용히 유실시킨 aliasing 버그를 막으려고 넣은 것이다
+    (`docs/LESSONS-LEARNED.md` §2). 그런데 **제거해도 아무도 즉시 모른다** —
+    빌드는 그냥 통과하고, 유실은 나중에 T-06 중복 검사가 우연히 잡아야 발견된다.
+
+    그래서 병합 함수를 일부러 조각을 버리도록 바꿔 놓고 빌드를 돌린다.
+    assert가 있으면 AssertionError로 멈추고, 없으면 조용히 통과한다.
+    후자면 이 검사가 실패한다.
+    """
+    import build_v3
+
+    original = build_v3.merge_undersized
+    try:
+        # 마지막 버킷을 버린다 — assert가 반드시 잡아야 하는 유실이다.
+        build_v3.merge_undersized = lambda buckets: (
+            original(buckets)[:-1] if len(original(buckets)) > 1 else original(buckets)
+        )
+        try:
+            build_v3.convert_v23(
+                REPO / "kb/_inputs/v23/chunks",
+                REPO / "kb/_inputs/v23/chunk-manifest.jsonl",
+            )
+        except AssertionError:
+            return []          # 의도한 동작 — 불변식이 유실을 잡았다
+        except Exception as e:  # noqa: BLE001
+            return [f"불변식 대신 다른 오류가 났습니다({type(e).__name__}: {e}). "
+                    f"보존 검사가 도달 불가능한 위치로 밀렸을 수 있습니다"]
+        return ["병합에서 조각을 버렸는데 빌드가 통과했습니다 — "
+                "build_v3.convert_v23의 보존 불변식 assert가 사라졌거나 무력화됐습니다. "
+                "docs/LESSONS-LEARNED.md §2 참조"]
+    finally:
+        build_v3.merge_undersized = original
+
+
 CHECKS = {
     "manifest": check_manifest,
     "ingestion": check_ingestion,
     "inputs": check_inputs,
     "policy": check_policy,
     "corrections": check_corrections,
+    "preservation": check_preservation,
 }
 
 

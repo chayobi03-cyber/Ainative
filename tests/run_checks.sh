@@ -24,10 +24,10 @@ echo "=== v3.0 품질 게이트 ==="
 run "T-01~T-08 청크 감사" python3 tools/kb_audit.py kb/chunks --quiet
 
 # 2. 저장소 정합성 — manifest 3자 일치, 색인 대상 분리, 빌더 입력 자족성,
-#    confidence 필터 정책 문서 일치, 정정 원장 회귀 시험.
+#    confidence 필터 정책 문서 일치, 정정 원장 회귀 시험, 병합 보존 불변식.
 #    이 검사들은 예전에 이 파일 안의 heredoc이었다. 문법 검사도 자기시험도 받지
 #    못하는 자리였고 `compileall tools` 대상에서도 빠져 있었다.
-run "저장소 정합성 (5종)" python3 tools/check_consistency.py
+run "저장소 정합성 (6종)" python3 tools/check_consistency.py
 
 # 3. T-18 게이트 자기시험 — 차단 검사 전체가 실제로 결함을 잡는지.
 #    한 번도 발화한 적 없는 검사는 작동을 보장하지 않는다. 픽스처마다 어느 게이트가

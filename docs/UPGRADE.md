@@ -145,7 +145,7 @@ python3 tools/check_references.py --write-baseline
 
 | 장치 | 어디 | 지키는 검사 |
 |---|---|---|
-| 병합 보존 불변식 `assert` | `build_v3.py` | 없음 — **사람이 지켜야 한다** |
+| 병합 보존 불변식 `assert` | `build_v3.py` | `check_consistency.py --only preservation` |
 | 정정 `applies: 0` 빌드 중단 | `build_v3.py` | `check_consistency.py --only corrections` |
 | 누출 실측 가드 | `eval_retrieval.py` | 자동 골든셋 + `fields` 뷰로 재현 |
 | dev/test 경계 | `optimize.py: load_dev()` | `optimize.py selftest` |
@@ -153,9 +153,13 @@ python3 tools/check_references.py --write-baseline
 | 근거 없는 벤더 단정 금지 | `vendors.yaml` | T-19 + 픽스처 |
 | 참조 무결성·커버리지 | 이 문서 | T-20 |
 
-첫 줄에 자기시험이 없다. `build_v3.py`의 `assert`는 청크 2개를 유실시킨 버그를
-막으려고 넣은 것이고(`docs/LESSONS-LEARNED.md` §2), **제거해도 아무도 즉시 모른다.**
-빌더를 손대는 이식이라면 이 줄이 살아 있는지 눈으로 확인한다.
+마지막까지 자기시험이 없던 것은 첫 줄이었다. `build_v3.py`의 `assert`는 청크 2개를
+유실시킨 버그를 막으려고 넣은 것인데(`docs/LESSONS-LEARNED.md` §2), 제거해도 빌드는
+그냥 통과하므로 아무도 즉시 알 수 없었다.
+
+이제 `check_consistency.py --only preservation`이 병합 함수를 일부러 조각을 버리도록
+바꿔 놓고 빌드를 돌린다. assert가 있으면 멈추고, 없으면 통과한다 — 후자면 검사가 실패한다.
+**표에 있는 모든 장치가 자기시험을 갖게 됐다.**
 
 ## 새 버전이 스키마를 바꿔 왔다면
 
