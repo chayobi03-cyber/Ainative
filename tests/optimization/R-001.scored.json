@@ -1,0 +1,142 @@
+{
+  "run": "R-001",
+  "generated": "2026-08-09T00:15:56Z",
+  "dev_n": 40,
+  "baseline": {
+    "global_ndcg@10": 0.373,
+    "global_recall@10": 0.475,
+    "local_ndcg@10": null,
+    "local_n": 0
+  },
+  "views": [
+    "body",
+    "fields",
+    "index"
+  ],
+  "expand_hops": 1,
+  "candidates": [
+    {
+      "candidate_id": "c1",
+      "chunk_id": "v3-doctor-command",
+      "leakage": 0.0,
+      "retrieval_questions": [
+        "doctor 커맨드란?",
+        "툴이 제대로 깔렸는지 스스로 확인하게 하려면?",
+        "환경변수가 빠졌을 때 사용자가 직접 알아채게 하려면?",
+        "온보딩 문의를 셀프서비스로 돌리는 최소 투자는?",
+        "자가진단 명령이 검사해야 할 항목은?"
+      ],
+      "rationale": "현재 질문이 전부 'doctor'라는 용어를 이미 아는 사람만 쓸 수 있는 형태다. 본문이 실제로 답하는 것(사전 조건 점검, 환경변수 누락 안내, 문의 감소)을 용어 없이도 걸리게 서술 층위를 넓혔다.",
+      "score": {
+        "global_ndcg@10": 0.3826,
+        "global_recall@10": 0.5,
+        "local_ndcg@10": 0.4155,
+        "local_n": 2
+      },
+      "delta_global": 0.0096,
+      "delta_local": 0.1934
+    },
+    {
+      "candidate_id": "c-leak",
+      "chunk_id": "v3-doctor-command",
+      "rejected": "leakage",
+      "leakage": 0.5,
+      "score": {
+        "global_ndcg@10": 0.373,
+        "global_recall@10": 0.475,
+        "local_ndcg@10": 0.2221,
+        "local_n": 2
+      }
+    },
+    {
+      "candidate_id": "c2",
+      "chunk_id": "v3-prompt-caching",
+      "leakage": 0.0,
+      "retrieval_questions": [
+        "prompt caching의 절감 효과는?",
+        "입력 토큰 비용을 가장 크게 줄이는 수단은?",
+        "cache_control breakpoint는 어디에 찍는가?",
+        "캐시 히트율이 낮은 이유는?",
+        "첫 응답이 느린데 단축할 방법이 있나?"
+      ],
+      "rationale": "본문의 핵심 수치가 '입력 토큰 90% 절감'과 'TTFT 85% 단축'인데 현재 질문은 절감률만 묻는다. 비용 절감과 지연 단축을 각각 걸리게 하고, 'prompt caching'을 모르는 사람이 쓸 표현을 추가했다.",
+      "score": {
+        "global_ndcg@10": 0.3798,
+        "global_recall@10": 0.4833,
+        "local_ndcg@10": 0.2851,
+        "local_n": 1
+      },
+      "delta_global": 0.0068,
+      "delta_local": 0.2851
+    },
+    {
+      "candidate_id": "c3",
+      "chunk_id": "v3-git-worktree",
+      "leakage": 0.0,
+      "retrieval_questions": [
+        "claude --worktree란?",
+        "세션을 여러 개 돌릴 때 편집이 충돌하지 않게 하려면?",
+        "같은 저장소에서 병렬 작업을 격리하는 방법은?",
+        "stateful MCP 서버와 worktree의 충돌은?"
+      ],
+      "rationale": "'worktree'를 모르면 현재 질문 어디에도 걸리지 않는다. 증상 서술('편집이 충돌') 층위를 넣었다.",
+      "score": {
+        "global_ndcg@10": 0.3748,
+        "global_recall@10": 0.4917,
+        "local_ndcg@10": 0.301,
+        "local_n": 1
+      },
+      "delta_global": 0.0018,
+      "delta_local": 0.301
+    },
+    {
+      "candidate_id": "c4",
+      "chunk_id": "v3-agent-skills",
+      "leakage": 0.0,
+      "retrieval_questions": [
+        "Agent Skills 포맷은?",
+        "반복되는 절차를 재사용 가능한 형태로 묶으려면?",
+        "Progressive disclosure 3단계는?",
+        "Skill description이 왜 중요한가?",
+        "SKILL.md 필수 frontmatter는?"
+      ],
+      "rationale": "본문이 '반복 절차의 캡슐화'를 다루는데 질문은 전부 포맷 세부사항이다. 목적 층위 질문을 하나 추가했다.",
+      "score": {
+        "global_ndcg@10": 0.378,
+        "global_recall@10": 0.4833,
+        "local_ndcg@10": 0.2031,
+        "local_n": 1
+      },
+      "delta_global": 0.005,
+      "delta_local": 0.2031
+    }
+  ],
+  "pareto_front_by_chunk": {
+    "v3-doctor-command": [
+      "c1"
+    ],
+    "v3-prompt-caching": [
+      "c2"
+    ],
+    "v3-git-worktree": [
+      "c3"
+    ],
+    "v3-agent-skills": [
+      "c4"
+    ]
+  },
+  "combined": {
+    "candidate_ids": [
+      "c1",
+      "c2",
+      "c3",
+      "c4"
+    ],
+    "score": {
+      "global_ndcg@10": 0.3958,
+      "global_recall@10": 0.5333,
+      "local_ndcg@10": null,
+      "local_n": 0
+    }
+  }
+}

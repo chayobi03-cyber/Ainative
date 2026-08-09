@@ -50,7 +50,17 @@ kb/INDEX.md         kb/llms.txt
 임베딩 모델처럼 의존성이 필요한 작업은 저장소 밖에서 수행하고 결과 파일을 넘긴다
 (`eval_retrieval.py --dense-runs` 참조).
 
-### 5. 검색 수치는 유효한 조건에서만 낸다
+### 5. dev로 최적화하고 test로 확인한다
+
+`tests/heldout_queries.jsonl`의 `split` 필드가 그 경계다.
+`dev`는 설정 선택·최적화에 써도 되고 **성능 주장에는 쓸 수 없다.**
+`test`는 게이트 전용이며 선택에 한 번도 노출되면 안 된다.
+
+`tools/optimize.py`가 `test`를 읽지 않도록 만들어져 있다. 그 경계를 우회하지 말 것 —
+최적화가 본 질의로는 그 최적화의 성능을 잴 수 없다.
+현재 `test`는 0건이고, 왜 그런지는 `docs/TEST-RESULTS.md` §12.8에 있다.
+
+### 6. 검색 수치는 유효한 조건에서만 낸다
 
 `retrieval_questions`로 만든 골든셋을 그 질문이 색인된 뷰로 평가하면 정답을 색인해
 두고 찾는 것이다. `tools/eval_retrieval.py`가 누출률을 실측해 자동으로 막지만,
@@ -58,7 +68,7 @@ kb/INDEX.md         kb/llms.txt
 
 융합·재순위·그래프 확장 수치는 **held-out 세트에서만** 의미가 있다.
 
-### 6. 비밀은 넣지 않는다
+### 7. 비밀은 넣지 않는다
 
 토큰·자격증명·사내 호스트명은 이 저장소의 어느 파일에도, 커밋 메시지에도 넣지 않는다.
 사내 캡처 이미지는 `screened: true` 없이는 빌드가 거부한다.
@@ -79,6 +89,9 @@ kb/INDEX.md         kb/llms.txt
 | 검색 평가 (자동 세트) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl` |
 | 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
+| 최적화 — 진단 | `python3 tools/optimize.py propose --run R-00N --top 5` |
+| 최적화 — 채점 | `python3 tools/optimize.py score --run R-00N --candidates cands.jsonl` |
+| 최적화 — 자기시험 | `python3 tools/optimize.py selftest` |
 
 청크 재빌드는 저장소만으로 완결된다.
 

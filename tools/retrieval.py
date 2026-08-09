@@ -331,7 +331,8 @@ def load_qrels(paths: list[Path]) -> tuple[dict[str, dict[str, int]], dict[str, 
                 {c: int(g) for c, g in (row.get("qrel") or {}).items()}
             )
             m = meta.setdefault(q, {})
-            for key in ("question_origin", "category", "audience", "confidence", "origin"):
+            for key in ("question_origin", "category", "audience", "confidence",
+                        "origin", "split"):
                 if row.get(key) is not None:
                     m[key] = row[key]
             if row.get("grade_source"):

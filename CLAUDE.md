@@ -51,6 +51,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── eval_retrieval.py  # BM25 검색 평가
 │   ├── upload_vectors.py  # 벡터 DB 적재 어댑터
 │   ├── retrieval.py       # 검색 원시 연산 (BM25·RRF·MMR·그래프 확장·지표)
+│   ├── optimize.py        # OPRO/GEPA 최적화 하네스 (LLM 비호출, 벤더 무관)
 │   ├── make_index.py      # manifest → INDEX.md / llms.txt
 │   ├── check_consistency.py   # 저장소 정합성 5종
 │   ├── check_gate_selftest.py # T-18 게이트 자기시험
@@ -78,6 +79,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
     ├── HANDOVER.md        # 인수인계 체크리스트
     ├── RAG-AGENT-SPEC.md  # RAG 제작 에이전트 설계 기록
     ├── EMBEDDING-SELECTION.md # 임베딩 모델 선정 절차 (측정 기반)
+    ├── OPTIMIZATION-LOOP.md # 최적화 루프 운영법
     └── INTERNAL-FILL-INS.md # 사내 정보 기입 요청
 ```
 
@@ -115,6 +117,8 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 | 실제 적재 | `python3 tools/upload_vectors.py --target chromadb --model bge-m3 --collection ainative-v3` |
 | 담당자 점검 | `python3 tools/check_owners.py` |
 | 재검토 일정 .ics | `python3 tools/make_calendar.py --out ainative-review.ics` |
+| 최적화 진단 | `python3 tools/optimize.py propose --run R-00N --top 5` |
+| 최적화 채점 | `python3 tools/optimize.py score --run R-00N --candidates cands.jsonl` |
 
 청크 재빌드는 `kb/_inputs/`의 v1/v2.3 원본을 쓴다. **저장소만으로 완결된다.**
 

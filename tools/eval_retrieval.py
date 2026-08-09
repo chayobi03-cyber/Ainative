@@ -372,11 +372,15 @@ def main() -> int:
         sets["auto"] = pairs_to_qrels(a.golden)
     if a.heldout:
         held_q, held_m = load_qrels([a.heldout])
-        for origin in sorted({(held_m.get(q, {}).get("origin") or "heldout") for q in held_q}):
-            sub = {q: v for q, v in held_q.items()
-                   if (held_m.get(q, {}).get("origin") or "heldout") == origin}
-            # held-out은 출처별로 반드시 분리 집계한다. 합산 점수는 내지 않는다.
-            sets[f"heldout:{origin}"] = (sub, held_m)
+
+        def key(q: str) -> str:
+            m = held_m.get(q, {})
+            # 출처(누가 만든 질의인가)와 split(선택에 써도 되는가)은 다른 축이며
+            # 둘 다 점수를 섞으면 안 되는 이유가 된다. 합산 점수는 내지 않는다.
+            return f"heldout:{m.get('origin') or 'unknown'}/{m.get('split') or 'unsplit'}"
+
+        for name in sorted({key(q) for q in held_q}):
+            sets[name] = ({q: v for q, v in held_q.items() if key(q) == name}, held_m)
     if not sets and not a.negatives:
         ap.error("평가할 질의 세트가 없습니다 (golden / --qrels / --heldout / --negatives 중 하나 필요)")
 
@@ -437,6 +441,11 @@ def main() -> int:
         res = evaluate(rank, qrels, meta)
         report["sets"][set_name] = res
         print_set(set_name, res, note=f"뷰={'+'.join(views)} 융합={a.fuse} 재순위={a.rerank}")
+        if set_name.endswith("/dev"):
+            # dev는 설정을 고를 때 쓴 세트다. 고른 설정의 성능을 그 세트로 재면
+            # 낙관적으로 나온다. 회귀 탐지에는 쓸 수 있고 성능 주장에는 못 쓴다.
+            print("  주의: dev split은 설정 선택에 사용된 세트입니다. "
+                  "회귀 탐지용이며 편향 없는 성능 추정치가 아닙니다.\n")
 
     if a.negatives:
         neg = [json.loads(l)["query"]

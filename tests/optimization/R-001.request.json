@@ -1,0 +1,242 @@
+{
+  "run": "R-001",
+  "generated": "2026-08-09T00:13:44Z",
+  "objective": "dev 세트의 global_ndcg@10을 올린다. local만 올리고 global이 내려가면 채택하지 않는다.",
+  "baseline": {
+    "global_ndcg@10": 0.373,
+    "global_recall@10": 0.475,
+    "local_ndcg@10": null,
+    "local_n": 0
+  },
+  "artifact": "retrieval_questions",
+  "constraints": [
+    "dev 질의 문장을 그대로 옮기지 말 것. 누출로 판정돼 자동 거부된다.",
+    "청크 본문이 실제로 답하는 것만 질문으로 쓸 것. 본문에 없는 답을 약속하는 질문은 그 청크를 어트랙터로 만든다.",
+    "영어 식별자(PreToolUse, RFC 8707 등)는 원문 그대로 둘 것.",
+    "질문은 4~6개. 서로 다른 표현 층위를 섞을 것 — 정식 용어, 구어체, 증상 서술, 역할 기반."
+  ],
+  "output_format": {
+    "file": "JSONL, 한 줄에 후보 하나",
+    "fields": [
+      "run",
+      "chunk_id",
+      "candidate_id",
+      "retrieval_questions",
+      "rationale"
+    ]
+  },
+  "targets": [
+    {
+      "chunk_id": "v3-agent-skills",
+      "title": "Claude Agent Skills: 포맷과 Progressive Disclosure",
+      "section_path": "설계 원칙 > Agent Skills",
+      "category": "development",
+      "tags": [
+        "Skills",
+        "SKILL.md",
+        "progressive-disclosure",
+        "frontmatter",
+        "agentskills.io"
+      ],
+      "current_retrieval_questions": [
+        "Agent Skills 포맷은?",
+        "Progressive disclosure 3단계는?",
+        "Skill description이 왜 중요한가?",
+        "SKILL.md 필수 frontmatter는?"
+      ],
+      "body_excerpt": "# Claude Agent Skills: 포맷과 Progressive Disclosure\n\n## 한 줄 요약\nAgent Skills는 SKILL.md(YAML frontmatter + Markdown body) 포맷으로, progressive disclosure를 통해 70-90% 토큰을 절감한다. description 품질이 자동 발화 정확도의 핵심이다.\n\n## 포맷\n- skill 폴더 안 `SKILL.md` (YAML frontmatter + Markdown body)\n- 필수 frontmatter: `name`, `description` **두 개뿐**\n- 선택: `allowed-tools`, `license`, 모델 오버라이드\n- 선택 디렉터리: `scripts/` (실행 Python/Bash), `references/` (필요시 로드 문서), `assets/` (템플릿/폰트)\n\n## Progressive Disclosure 3단계\n1. frontmatter name+description만 시작 시 로드 (스킬당 ~60~100 토큰)\n2. 관련 판단/명시 호출 시 SKILL.md body 로드 (권장 <5,000 토큰 / <500줄)\n3. 참조 파일은 실제 필요 시에만 로드\n\n### 토큰 절감 예시\n- 8개 스킬 전부 로드 시 ~70,000 토큰\n- progressive로 시작 시 ~500 토큰, 임의 시점 ~2,000 토큰 (70-90% 절감)\n\n## 배포 경로\n- 개인: `~/.claude/skills/`\n- 프로젝트: `.claude/skills/`\n- plugin 제공, built-in\n\n## Agent Skills 오픈 표준\n- agentskills.io (2025-12-18 발표)\n- Claude, OpenAI Codex, Gemini CLI, Cursor, VS Code 등 26+ 플랫폼 채택\n- 이식성 확보\n\n## description 작성 가이드\n- \"무엇을 하는지 + 언제 쓰는지\" 둘 다 명시\n- description이 모호하면 스킬이 자동 발화하지 않아 매번 명시 호출해야 하는 실패가 흔함\n- Claude 모델은 SKILL.md 포맷을 네이티브 이해하므로 \"스킬 작성 스킬\" 없이도 생성 가능",
+      "lost_gain_total": 1.0,
+      "failures": [
+        {
+          "query": "매번 똑같은 지시를 반복해서 입력하는 게 번거로운데 묶어둘 방법 없나요",
+          "gold_rank": null,
+          "lost_gain": 1.0,
+          "won_instead": [
+            {
+              "chunk_id": "v3-llms-txt",
+              "title": "llms.txt로 사내 API 문서 에이전트 친화화"
+            },
+            {
+              "chunk_id": "v3-cross-model-review",
+              "title": "Cross-model review (Claude 생성 → Gemini 리뷰)"
+            },
+            {
+              "chunk_id": "v3-eval-methodology",
+              "title": "평가 방법론과 비결정성 다루기"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chunk_id": "v3-prompt-caching",
+      "title": "Prompt caching: 단일 최대 비용 절감 레버",
+      "section_path": "비용·성능 > Prompt caching",
+      "category": "cost",
+      "tags": [
+        "prompt-caching",
+        "cache_control",
+        "Anthropic",
+        "OpenAI",
+        "Google",
+        "TTFT",
+        "token-reduction"
+      ],
+      "current_retrieval_questions": [
+        "prompt caching의 절감 효과는?",
+        "cache_control breakpoint는 어떻게 설정하는가?",
+        "캐시 히트율이 낮은 이유는?"
+      ],
+      "body_excerpt": "# Prompt caching: 단일 최대 비용 절감 레버\n\n## 한 줄 요약\nprompt caching을 적용하면 입력 토큰을 최대 90% 절감하고 TTFT(Time To First Token)를 최대 85% 단축할 수 있다. 정적→동적 순서로 프롬프트를 배열하고 정적 블록 끝에 breakpoint를 찍는 것이 핵심이다.\n\n## 핵심 수치\n- **Anthropic**: cache_control breakpoint, write는 입력의 1.25배(5분 TTL) 또는 2.0배(1시간 TTL), read는 0.10배 — **90% 할인**. 최소 1,024 토큰.\n- **OpenAI**: 자동 캐싱, 서버사이드, 코드 변경 불필요, read는 0.5배 — **50% 할인**.\n- **Google**: implicit caching, **75% 할인**. 입력 토큰만 건드리며 출력은 절대 할인되지 않음.\n\n## 손익분기\n- Anthropic 5분 티어: 캐시 write당 약 1.4회 read에서 손익분기\n- 안정 프롬프트에서 히트율 ~30% 미만이면 write 프리미엄이 read 절감보다 클 수 있음\n- 안정 프롬프트에서 60% 미만 히트율은 구조적 문제 신호\n\n## 실사례\n- ProjectDiscovery: 동적 콘텐츠 재배치로 캐시 히트율 7% → 84%, 전체 LLM 비용 59~70% 절감, 프로덕션에서 98억 토큰 캐시 서빙 (⚠️ 2차 인용)\n\n## 적용 방법\n**정적 → 동적 순서로 프롬프트를 배열**하고 정적 블록 끝에 breakpoint를 찍는다:\n```\n[system prompt] [tool definitions] [사내 정책·컨벤션] ← 여기까지 cache_control\n[대화 히스토리] [현재 요청]                          ← 매번 변하는 부분\n```\n\n## 본 프로젝트 적용\n툴 생성 에이전트는 Anthropic 5원칙 + 사내 규칙 + MCP 템플릿이라는 거대하고 안정적인 프리픽스를 매 호출 재전송한다. 캐싱 적용의 교과서적 대상.\n\n## 리스크\n- 정적 블록에 타임스탬프·요청 ID 등이 섞이면 히트율 0\n- `cache_read_input_tokens`를 반드시 모니터링\n\n## 난이도/소요\n하 | 2시간",
+      "lost_gain_total": 1.0,
+      "failures": [
+        {
+          "query": "요금이 생각보다 많이 나오는데 가장 크게 줄일 수 있는 게 뭔가요",
+          "gold_rank": null,
+          "lost_gain": 1.0,
+          "won_instead": [
+            {
+              "chunk_id": "v3-faq",
+              "title": "FAQ: 자주 묻는 질문"
+            },
+            {
+              "chunk_id": "v3-compliance-audit",
+              "title": "보안 감사·컴플라이언스 대응 절차"
+            },
+            {
+              "chunk_id": "v3-claude-code-guide",
+              "title": "Claude Code 운영 가이드"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chunk_id": "v3-git-worktree",
+      "title": "git worktree 병렬 세션",
+      "section_path": "개발자 체감 > git worktree",
+      "category": "development",
+      "tags": [
+        "git-worktree",
+        "parallel",
+        "tmux",
+        "stateless",
+        "isolation"
+      ],
+      "current_retrieval_questions": [
+        "claude --worktree란?",
+        "병렬 세션 시 파일 충돌을 어떻게 막는가?",
+        "stateful MCP 서버와 worktree의 충돌은?"
+      ],
+      "body_excerpt": "# git worktree 병렬 세션\n\n## 한 줄 요약\n`claude --worktree <name>`으로 저장소별 격리 작업 디렉터리에서 세션을 실행하면, 같은 git repo에서 여러 Claude Code 세션을 코드 편집 충돌 없이 병렬 실행할 수 있다.\n\n## 사용법\n```bash\nclaude --worktree feat-mcp-gen --tmux\n# 각 worktree에 태스크 전용 CLAUDE.md를 두면 에이전트별로 범위를 좁힐 수 있다\n```\n\n## 핵심 포인트\n- Claude Code 창시자 Boris Cherny가 \"단일 최대 생산성 언락\"이라 부른 방식\n- 서브에이전트도 worktree 격리를 쓸 수 있어 대규모 배치 변경과 코드 마이그레이션에 강력\n- worktree마다 디렉터리가 다르므로 각 worktree에 태스크별 CLAUDE.md를 두어도 다른 worktree에 영향을 주지 않음\n\n## 주의사항 (stateful MCP 서버)\n- stateless MCP 서버(순수 함수 툴, 영속 상태 없음)는 문제없다\n- stateful 서버(DB 커넥션, 파일 인덱스, 캐시된 컨텍스트)는 격리가 필요하다\n- 두 에이전트가 같은 DB MCP 서버를 통해 같은 스키마에 쓰는 건 브랜치 충돌 문제가 한 계층 위로 올라간 것\n- **MCP 서버 생성 에이전트를 만들 때 \"가능한 한 stateless로 설계\"를 기본 규칙에 넣을 것**\n- worktree + DB 브랜칭 + 포트 격리를 묶어야 3~5개 세션 동시 실행이 성립\n\n## 난이도/소요\n하 | 30분",
+      "lost_gain_total": 1.0,
+      "failures": [
+        {
+          "query": "여러 작업을 한꺼번에 돌리려는데 소스가 서로 꼬입니다",
+          "gold_rank": null,
+          "lost_gain": 1.0,
+          "won_instead": [
+            {
+              "chunk_id": "v3-01-open-source-mcp-servers-01",
+              "title": "오픈소스 MCP 서버 카탈로그 — 정의"
+            },
+            {
+              "chunk_id": "v3-onboarding-day1",
+              "title": "신규 사용자 온보딩 — 첫날 경로"
+            },
+            {
+              "chunk_id": "v3-01-open-source-mcp-servers-03",
+              "title": "오픈소스 MCP 서버 카탈로그 — MCP 서버 디렉토리 및 검색"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chunk_id": "v3-enterprise-cases",
+      "title": "선도 기업 사례 (Block/Goose, Uber, Coinbase 등)",
+      "section_path": "사례 > 선도 기업",
+      "category": "governance",
+      "tags": [
+        "Block",
+        "Goose",
+        "Uber",
+        "Coinbase",
+        "Stripe",
+        "Ramp",
+        "Google",
+        "Agent-Smith"
+      ],
+      "current_retrieval_questions": [
+        "Block의 Goose 사례는?",
+        "Uber의 에이전트 도입 효과는?",
+        "사내 코딩 에이전트 도입 수치는?",
+        "공통 아키텍처 패턴은?"
+      ],
+      "body_excerpt": "# 선도 기업 사례 (Block/Goose, Uber, Coinbase 등)\n\n## 한 줄 요약\nBlock(Goose), Uber, Coinbase, Stripe, Ramp, Google 등 선도 기업들의 사내 에이전트 도입 사례와 공통 아키텍처 패턴을 정리한다. (⚠️ 대부분 2차 출처 취합, 개별 검증 권장)\n\n## Block (Goose) — 사내 전사 배포의 교과서\n- 12,000명 직원 전반의 도구와 워크플로우 정리\n- **Default Distribution: Goose가 모든 Block 노트북에 자동 설치, 자동 업데이트** ← 채택률의 근본 해법\n- LLM 비종속 설계 (OpenAI·Anthropic·Meta 등 복수 모델, Databricks로 사내 호스팅)\n- 동적 MCP 서버 활성화, Snowflake MCP를 통한 자연어→SQL, Recipe 스키마\n- Stripe가 Goose를 Minions로 포크 → 공유 인프라의 가치 입증\n\n## 사내 코딩 에이전트 도입 수치 (⚠️ 2차 출처)\n- **Coinbase Forge**: 머지된 PR의 5%, PR 사이클 타임 150시간 → 15시간\n- **Uber**: LangGraph 기반 Validator·Autocover로 21,000 개발자 시간 절감\n- **Abnormal AI**: 백그라운드 에이전트 PR 비율 13%\n- **Ramp**: 백그라운드 에이전트 PR 비율 50%+\n- **Google Agent Smith**: 사내에서 너무 인기가 많아 접근 제한, 신규 프로덕션 코드의 25%+\n- **Mux**: 병렬 에이전트 플릿 3.5배 처리량\n\n## 공통 아키텍처\nSlack 호출 → 격리 샌드박스 → CI 루프 → PR-ready 산출물\n\n## 본 프로젝트 시사점\n1. LLM 비종속 설계를 처음부터 (3사 계약 보유 = 강점)\n2. 동적 MCP 서버 활성화 = 툴 폭발 대응의 사내 검증된 답\n3. 자동 설치·자동 업데이트 채널 확보가 최우선 결정",
+      "lost_gain_total": 1.0,
+      "failures": [
+        {
+          "query": "다른 회사들은 이걸로 실제 뭘 했나요",
+          "gold_rank": null,
+          "lost_gain": 1.0,
+          "won_instead": [
+            {
+              "chunk_id": "v3-mcp-security-cve",
+              "title": "MCP 보안: 실제 사고와 CVE 사례"
+            },
+            {
+              "chunk_id": "v3-compliance-audit",
+              "title": "보안 감사·컴플라이언스 대응 절차"
+            },
+            {
+              "chunk_id": "v3-korean-rag",
+              "title": "한국어 RAG 고려사항 — 임베딩 선택과 토큰 예산"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chunk_id": "v3-doctor-command",
+      "title": "doctor 커맨드: 온보딩 문의를 없애는 최소 투자",
+      "section_path": "사용자 편의 > doctor",
+      "category": "development",
+      "tags": [
+        "doctor",
+        "onboarding",
+        "self-service",
+        "diagnostics",
+        "environment-check"
+      ],
+      "current_retrieval_questions": [
+        "doctor 커맨드란?",
+        "온보딩 문의를 줄이는 방법은?",
+        "doctor가 검사해야 할 항목은?"
+      ],
+      "body_excerpt": "# doctor 커맨드: 온보딩 문의를 없애는 최소 투자\n\n## 한 줄 요약\n생성 에이전트가 만드는 모든 툴에 자가진단 명령(doctor)을 기본 탑재하면, 사내 배포 후 발생하는 문의의 대부분을 셀프서비스로 전환할 수 있다.\n\n## 예제 출력\n```bash\n$ corp-mcp-crm doctor\n✔ Python 3.12.3 (>=3.10 필요)\n✔ uv 0.5.11\n✖ CRM_TOKEN 환경변수 없음\n  → 해결: 사내 포털 > 개인 토큰 발급 후 `export CRM_TOKEN=...`\n✔ CRM API 연결 (응답 142ms)\n✔ Claude Code .mcp.json 등록됨\n✖ Gemini CLI settings.json 미등록\n  → 해결: `corp-mcp-crm install --client gemini`\n```\n\n## 왜 효과적인가\n- 사내 배포 후 발생하는 문의의 대부분은 \"안 돼요\"\n- 원인의 대부분은 환경·토큰·등록 3종\n- doctor 하나가 문의 대부분을 셀프서비스로 전환\n\n## 검사 항목\n- Python/Node.js 버전\n- 패키지 매니저(uv/npm) 설치 여부\n- 환경변수(토큰 등) 존재 여부\n- API 연결 확인\n- Claude Code / Gemini CLI 설정 파일 등록 여부\n\n## 난이도/소요\n하 | 2시간 (템플릿화하면 재사용)",
+      "lost_gain_total": 1.0,
+      "failures": [
+        {
+          "query": "설치가 제대로 됐는지 한 번에 점검하는 명령이 있나요",
+          "gold_rank": null,
+          "lost_gain": 1.0,
+          "won_instead": [
+            {
+              "chunk_id": "v3-onboarding-day1",
+              "title": "신규 사용자 온보딩 — 첫날 경로"
+            },
+            {
+              "chunk_id": "v3-mcp-2026-07-28-changes",
+              "title": "MCP 2026-07-28 파괴적 변경 전체 목록"
+            },
+            {
+              "chunk_id": "v3-incident-runbook",
+              "title": "장애 대응 런북 — 에이전트/MCP 운영 사고"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

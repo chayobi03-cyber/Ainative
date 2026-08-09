@@ -146,8 +146,14 @@ python3 tools/build_v3.py --v1 <v1> --v23-chunks <v23> --v23-manifest <m> \
 `origin`을 `"user-log"`로 둔다. 정답 청크는 사람이 지정한다.
 
 ```json
-{"query": "<사용자가 실제로 친 문장 그대로>", "qrel": {"<chunk_id>": 3}, "origin": "user-log"}
+{"query": "<사용자가 실제로 친 문장 그대로>", "qrel": {"<chunk_id>": 3},
+ "origin": "user-log", "split": "test"}
 ```
+
+**`split: "test"`가 중요하다.** 기존 40건은 검색 설정을 고르는 데 이미 쓰여서
+그 설정의 성능을 편향 없이 잴 수 없다(`docs/TEST-RESULTS.md` §12.8). 실제 로그는
+**설정 선택에 한 번도 쓰지 않고** 게이트 전용으로 남겨야 첫 정직한 추정치가 된다.
+최적화 하네스(`tools/optimize.py`)는 `test` split을 읽지 않도록 만들어져 있다.
 
 평가기가 `origin`별로 자동 분리 집계하므로 같은 파일에 섞어 넣어도 된다.
 **두 출처의 점수를 합산하지 않는 것이 이 설계의 요점이다** — `llm-authored` 점수와

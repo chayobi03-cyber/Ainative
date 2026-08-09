@@ -54,12 +54,17 @@ run "T-17 에이전트 표면" python3 tools/check_agent_surface.py
 run "T-17 자기시험(픽스처가 FAIL을 유발)" bash -c \
   '! python3 tools/check_agent_surface.py --skills tests/fixtures/agent_surface_broken'
 
-# 9. T-16 재검토 기한. 기한 초과 후 유예 14일까지는 WARN이고 그 뒤 차단한다.
+# 9. 최적화 하네스 자기시험 — 안전장치가 발화하는가.
+#    이 하네스의 가치는 절반이 안전장치다(test 차단·누출 거부). 발화한 적 없는
+#    안전장치는 작동을 보장하지 않는다.
+run "최적화 하네스 자기시험" python3 tools/optimize.py selftest
+
+# 10. T-16 재검토 기한. 기한 초과 후 유예 14일까지는 WARN이고 그 뒤 차단한다.
 #    YAML은 알림을 보내지 않는다 — 지금까지 기한은 적혀만 있었다.
 #    모델 가격 항목(2026-09-01)이 방치되면 2026-09-16부터 이 단계가 막는다. 의도한 동작이다.
 run "T-16 재검토 기한" python3 tools/check_freshness.py
 
-# 10. T-14 검색 회귀 — 자동 qrels(본문 전용).
+# 11. T-14 검색 회귀 — 자동 qrels(본문 전용).
 #    여기까지 이 게이트에는 검색 항목이 하나도 없었다. ci/gate.sh가 평가를 돌리긴
 #    했지만 `|| true`라 아티팩트만 남고 아무것도 막지 못했다. Recall이 절반으로
 #    떨어져도 CI는 초록이었다.
@@ -67,7 +72,7 @@ run "T-14 검색 회귀 (자동 qrels)" python3 tools/eval_retrieval.py kb/manif
   --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl --mode body \
   --baseline tests/baseline_retrieval.json --max-drop 0.02
 
-# 11. T-14 검색 회귀 — held-out(실제 질의에 가까운 세트, 프로덕션 설정).
+# 12. T-14 검색 회귀 — held-out(실제 질의에 가까운 세트, 프로덕션 설정).
 #     표본이 40건뿐이라 흔들림이 크므로 허용 낙폭을 넓게 잡는다.
 run "T-14 검색 회귀 (held-out)" python3 tools/eval_retrieval.py kb/manifest.jsonl \
   --heldout tests/heldout_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1 \
