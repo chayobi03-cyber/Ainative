@@ -74,6 +74,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── negative_queries.jsonl   # KB 범위 밖 질의
 │   └── baseline_*.json          # T-14 회귀 기준선
 └── docs/
+    ├── SYSTEM-DESIGN.md   # 전체 구조 — 두 루프와 현재 공백
     ├── TEST-PLAN.md       # 시험법
     ├── TEST-RESULTS.md    # 시험결과
     ├── LESSONS-LEARNED.md # 제작 과정 회고
