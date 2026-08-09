@@ -9,6 +9,7 @@ Claude Code 전용 항목은 `CLAUDE.md`에 있다. **두 파일이 겹치는 �
 > 전체 구조와 현재 공백은 [`docs/SYSTEM-DESIGN.md`](docs/SYSTEM-DESIGN.md)에 있다.
 > **다음 버전을 이식하려면 [`docs/UPGRADE.md`](docs/UPGRADE.md)를 먼저 읽는다** —
 > 덮어써도 되는 것과 덮어쓰면 안 되는 것이 섞여 있다.
+> 2026-08 전달분의 적용 가이드는 [`docs/HANDOVER-2026-08.md`](docs/HANDOVER-2026-08.md).
 > 무엇이 작동하고 무엇이 아직 안 되는지를 먼저 읽으면 헛수고를 줄인다.
 
 ## 이 저장소가 무엇인가
