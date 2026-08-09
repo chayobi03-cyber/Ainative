@@ -58,6 +58,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   ├── check_agent_surface.py # T-17 SKILL.md 규격·색인 동기
 │   ├── check_freshness.py # T-16 재검토 기한
 │   ├── check_vendor_matrix.py # T-19 벤더 역량 행렬
+│   ├── check_references.py # T-20 참조 무결성·평가 커버리지
 │   ├── check_owners.py    # 담당자 지정 점검
 │   └── make_calendar.py   # 재검토 일정 → .ics
 ├── OWNERS.yaml            # 담당자 지정 (인수인계 시 기입)
@@ -75,6 +76,7 @@ v3.0은 두 선행 세트(v1 47청크, v2.3 135청크)를 통합·재청킹한 �
 │   └── baseline_*.json          # T-14 회귀 기준선
 └── docs/
     ├── SYSTEM-DESIGN.md   # 전체 구조 — 두 루프와 현재 공백
+    ├── UPGRADE.md         # 다음 버전 이식 절차
     ├── TEST-PLAN.md       # 시험법
     ├── TEST-RESULTS.md    # 시험결과
     ├── LESSONS-LEARNED.md # 제작 과정 회고
@@ -205,7 +207,7 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 
 차단(FAIL): T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성, T-08 포맷,
 T-13 에셋 무결성, T-14 검색 회귀, T-16 재검토 기한, T-17 에이전트 표면,
-T-18 게이트 자기시험, T-19 벤더 역량 행렬
+T-18 게이트 자기시험, T-19 벤더 역량 행렬, T-20 참조 무결성
 경고(WARN, 차단 안 함): T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형, T-15 어트랙터
 
 ## 재검토 주기

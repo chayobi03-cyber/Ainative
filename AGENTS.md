@@ -7,6 +7,8 @@ Claude Code 전용 항목은 `CLAUDE.md`에 있다. **두 파일이 겹치는 �
 이 문서는 저장소를 **수정**할 때의 규칙이다.
 
 > 전체 구조와 현재 공백은 [`docs/SYSTEM-DESIGN.md`](docs/SYSTEM-DESIGN.md)에 있다.
+> **다음 버전을 이식하려면 [`docs/UPGRADE.md`](docs/UPGRADE.md)를 먼저 읽는다** —
+> 덮어써도 되는 것과 덮어쓰면 안 되는 것이 섞여 있다.
 > 무엇이 작동하고 무엇이 아직 안 되는지를 먼저 읽으면 헛수고를 줄인다.
 
 ## 이 저장소가 무엇인가
@@ -104,6 +106,7 @@ kb/INDEX.md         kb/llms.txt
 | 검색 평가 (자동 세트) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --qrels tests/qrels_auto.jsonl tests/qrels_adjudicated.jsonl` |
 | 검색 평가 (held-out) | `python3 tools/eval_retrieval.py kb/manifest.jsonl --heldout tests/heldout_queries.jsonl --negatives tests/negative_queries.jsonl --views body,fields,index --fuse rrf --expand-hops 1` |
 | 적재 페이로드 검증 | `python3 tools/upload_vectors.py --dry-run --target chromadb` |
+| 참조·커버리지 점검 | `python3 tools/check_references.py` |
 | 벤더 역량 행렬 | `python3 tools/check_vendor_matrix.py --report` |
 | 최적화 — 진단 | `python3 tools/optimize.py propose --run R-00N --top 5` |
 | 최적화 — 채점 | `python3 tools/optimize.py score --run R-00N --candidates cands.jsonl` |
@@ -120,7 +123,8 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 
 재빌드 후에는 골든셋·qrels·기준선·`kb/INDEX.md`를 함께 재생성해야 한다.
 
-**청크를 추가했으면 평가 세트도 확장한다.** 새 청크는 방해물로만 집계되고 정답으로는
+**청크를 추가했으면 평가 세트도 확장한다.** T-20이 커버리지 비율에 바닥을 둬서
+안 하면 게이트가 막는다. 새 청크는 방해물로만 집계되고 정답으로는
 집계되지 않으므로, 평가 세트를 고정한 채 코퍼스만 키우면 점수가 내려간다.
 실제로 한 번 겪었다 — `docs/TEST-RESULTS.md` §12.9.
 
@@ -130,7 +134,7 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 
 **차단(FAIL)**: T-03 메타데이터, T-04 retrieval_questions, T-05 참조 무결성,
 T-08 포맷, T-13 에셋 무결성, T-14 검색 회귀, T-16 재검토 기한, T-17 에이전트 표면,
-T-18 게이트 자기시험, T-19 벤더 역량 행렬
+T-18 게이트 자기시험, T-19 벤더 역량 행렬, T-20 참조 무결성·평가 커버리지
 
 **경고(WARN, 차단 안 함)**: T-01 크기, T-02 자율성, T-06 중복, T-07 카테고리 균형,
 T-15 어트랙터

@@ -1,0 +1,8 @@
+{
+  "chunks": 102,
+  "covered_any": 102,
+  "covered_heldout": 70,
+  "ratio_any": 1.0,
+  "ratio_heldout": 0.6863,
+  "note": "T-20 커버리지 기준선. 청크를 추가하면 평가 세트도 늘려야 이 비율이 유지된다 — docs/TEST-RESULTS.md §12.9."
+}

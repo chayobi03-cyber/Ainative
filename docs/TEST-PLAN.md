@@ -78,10 +78,11 @@ tokens ≈ 1.45·(한글 음절 수)
 | **T-17** | 에이전트 표면 | SKILL.md 규격 준수 + 라우팅 색인이 manifest와 동기 | **FAIL** |
 | **T-18** | 게이트 자기시험 | 차단 검사 5종이 각자의 결함 픽스처에서 정확히 발화 | **FAIL** |
 | **T-19** | 벤더 역량 행렬 | 모든 (기능 × 벤더) 셀에 근거 표기. 근거 없는 단정 0건 | **FAIL** |
+| **T-20** | 참조 무결성·평가 커버리지 | 원장·문서의 `chunk_id` 참조가 전부 해소. 커버리지 비율 낙폭 0.02 이내 | **FAIL** |
 
 T-14 이후는 `kb_audit.py`가 아니라 각 전용 도구가 판정한다
 (`eval_retrieval.py`, `check_freshness.py`, `check_agent_surface.py`,
-`check_gate_selftest.py`, `check_vendor_matrix.py`).
+`check_gate_selftest.py`, `check_vendor_matrix.py`, `check_references.py`).
 
 **T-19가 검사하는 것은 지원 여부가 아니라 근거 표기다.** `unknown`은 통과하고
 `support: yes` + `verified: unknown`은 막힌다 — 모르는 것을 모른다고 적는 건 정상이고,
