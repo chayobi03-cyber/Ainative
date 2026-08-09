@@ -406,6 +406,11 @@
 {"query": "신규 팀원 온보딩 순서는?", "expected_chunk_id": "v3-onboarding-day1", "category": "operations", "audience": ["신규입사자", "개발자", "운영자"], "question_origin": "authored", "confidence": "draft"}
 {"query": "Claude Code를 처음 설치했는데 다음은?", "expected_chunk_id": "v3-onboarding-day1", "category": "operations", "audience": ["신규입사자", "개발자", "운영자"], "question_origin": "authored", "confidence": "draft"}
 {"query": "첫날 무엇을 확인해야 하나요?", "expected_chunk_id": "v3-onboarding-day1", "category": "operations", "audience": ["신규입사자", "개발자", "운영자"], "question_origin": "authored", "confidence": "draft"}
+{"query": "에이전트를 여러 개 엮을 때 어떤 구조를 골라야 하나요?", "expected_chunk_id": "v3-orchestration-patterns", "category": "architecture", "audience": ["개발자", "아키텍트", "운영자"], "question_origin": "authored", "confidence": "mixed"}
+{"query": "작업을 나눠서 시켰더니 서로 계속 넘기기만 합니다", "expected_chunk_id": "v3-orchestration-patterns", "category": "architecture", "audience": ["개발자", "아키텍트", "운영자"], "question_origin": "authored", "confidence": "mixed"}
+{"query": "여러 단계를 거치면서 앞의 내용이 자꾸 없어집니다", "expected_chunk_id": "v3-orchestration-patterns", "category": "architecture", "audience": ["개발자", "아키텍트", "운영자"], "question_origin": "authored", "confidence": "mixed"}
+{"query": "오케스트레이션 비용을 줄이는 방법은?", "expected_chunk_id": "v3-orchestration-patterns", "category": "architecture", "audience": ["개발자", "아키텍트", "운영자"], "question_origin": "authored", "confidence": "mixed"}
+{"query": "멀티 에이전트에서 무엇을 관측해야 하나요?", "expected_chunk_id": "v3-orchestration-patterns", "category": "architecture", "audience": ["개발자", "아키텍트", "운영자"], "question_origin": "authored", "confidence": "mixed"}
 {"query": "RAG 파이프라인을 어떻게 설계하나요?", "expected_chunk_id": "v3-rag-pipeline-design", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "하이브리드 검색은 어떻게 구성하나요?", "expected_chunk_id": "v3-rag-pipeline-design", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}
 {"query": "검색 품질은 어떻게 측정하나요?", "expected_chunk_id": "v3-rag-pipeline-design", "category": "architecture", "audience": ["개발자", "아키텍트"], "question_origin": "authored", "confidence": "draft"}

@@ -2,7 +2,7 @@
 
 <!-- 생성물입니다. 직접 고치지 마십시오. `python3 tools/make_index.py`로 다시 만듭니다. 내용을 바꾸려면 kb/authored/ 또는 빌더를 고치고 재빌드하십시오. -->
 
-청크 101개. 한 줄에 한 청크이므로 `grep`으로 바로 찾을 수 있습니다.
+청크 102개. 한 줄에 한 청크이므로 `grep`으로 바로 찾을 수 있습니다.
 
 ```bash
 grep -i 'hook' kb/INDEX.md          # 주제로 찾기
@@ -100,7 +100,7 @@ grep -i 'verified' kb/INDEX.md      # 검증된 것만
   태그: MCP, migration, 2025-11-25, 2026-07-28, deprecated, stateless, SSE  
   예시 질문: MCP 사양을 어느 버전으로 올려야 하나요?
 
-## architecture (6)
+## architecture (7)
 
 - `v3-component-selection` — Skills vs MCP vs Subagent vs Slash Command 선택 기준 [verified] → `chunks/v3-component-selection.md`  
   태그: MCP, Skills, Subagent, slash-command, plugin, selection-criteria  
@@ -114,6 +114,9 @@ grep -i 'verified' kb/INDEX.md      # 검증된 것만
 - `v3-mcp-gateway` — MCP Gateway 도입 판단 [mixed] → `chunks/v3-mcp-gateway.md`  
   태그: MCP-gateway, MCPX, Bifrost, MetaMCP, tool-explosion, aggregation  
   예시 질문: MCP Gateway란?
+- `v3-orchestration-patterns` — 멀티 에이전트 오케스트레이션 — 패턴 선택과 실패 모드 [mixed] → `chunks/v3-orchestration-patterns.md`  
+  태그: orchestration, multi-agent, supervisor, fan-out, pipeline, handoff, routing, observability  
+  예시 질문: 에이전트를 여러 개 엮을 때 어떤 구조를 골라야 하나요?
 - `v3-rag-pipeline-design` — RAG 파이프라인 설계 — 적재부터 검색 품질까지 [draft] → `chunks/v3-rag-pipeline-design.md`  
   태그: RAG, embedding, hybrid-search, reranking, recall, vector-db, chunking  
   예시 질문: RAG 파이프라인을 어떻게 설계하나요?

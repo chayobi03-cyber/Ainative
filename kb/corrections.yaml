@@ -141,3 +141,29 @@ unverified:
     claim: "기업 도입 수치(Coinbase 5%, Ramp 50%, Uber 21,000시간 등)"
     blocker: "전부 2차 취합 블로그 출처"
     next_action: "인용 시 반드시 '2차 출처' 표기 유지"
+
+  - id: U-004
+    date: "2026-08-08"
+    claim: >
+      멀티 에이전트 오케스트레이션 수치 — 모델 티어링 비용 절감 40~60%,
+      프로덕션 도입 파일럿의 6개월 내 실패율 40%.
+    blocker: >
+      2026년 실무 블로그·가이드 취합이며 1차 측정 보고서가 아니다.
+      표본·측정 방법·"실패"의 정의가 출처마다 다르다.
+    next_action: >
+      **사내 목표치로 쓰지 말 것.** `v3-orchestration-patterns`가 이 수치를
+      2차 출처로 명시하고 사내 실측 항목 4종을 별도로 지정하고 있다.
+      실측이 나오면 그 값으로 대체하고 이 항목을 verified_no_change 또는
+      corrections로 옮긴다.
+    chunks: ["v3-orchestration-patterns"]
+
+  - id: U-005
+    date: "2026-08-08"
+    claim: "kb/vendors.yaml에서 verified: secondary로 표기된 9개 셀"
+    blocker: >
+      Gemini CLI·Codex·로컬 백엔드의 지원 범위를 벤더 공식 문서가 아닌
+      커뮤니티 보고로 확인했다. 사내에서 실행해 본 적은 없다.
+    next_action: >
+      `kb/vendors.yaml`의 next_verification 절 순서대로 확인하고
+      `verified: internal-test`로 올릴 것. T-19가 근거 표기를 강제하지만
+      **표기가 정확하다는 것과 내용이 맞다는 것은 다른 문제다.**

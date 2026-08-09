@@ -1,6 +1,6 @@
 # Ainative
 
-> 사내 AI 협업(Claude Code / Gemini CLI / MCP / Skills) 지식 베이스. 청크 101개를 주제별로 나눠 두었습니다. 각 링크는 저장소 안의 마크다운 파일이며 그 자체로 완결된 문서입니다.
+> 사내 AI 협업(Claude Code / Gemini CLI / MCP / Skills) 지식 베이스. 청크 102개를 주제별로 나눠 두었습니다. 각 링크는 저장소 안의 마크다운 파일이며 그 자체로 완결된 문서입니다.
 
 생성물입니다. `python3 tools/make_index.py`로 다시 만듭니다.
 
@@ -45,6 +45,7 @@
 - [에이전트 프레임워크 비교 (사내 배포 관점)](chunks/v3-framework-comparison.md): 사내 배포에 가장 적합한 에이전트 프레임워크는? (verified)
 - [한국어 RAG 고려사항 — 임베딩 선택과 토큰 예산](chunks/v3-korean-rag.md): 한국어 RAG에는 어떤 임베딩 모델이 좋나요? (draft)
 - [MCP Gateway 도입 판단](chunks/v3-mcp-gateway.md): MCP Gateway란? (mixed)
+- [멀티 에이전트 오케스트레이션 — 패턴 선택과 실패 모드](chunks/v3-orchestration-patterns.md): 에이전트를 여러 개 엮을 때 어떤 구조를 골라야 하나요? (mixed)
 - [RAG 파이프라인 설계 — 적재부터 검색 품질까지](chunks/v3-rag-pipeline-design.md): RAG 파이프라인을 어떻게 설계하나요? (draft)
 - [워크플로우 아키텍처 패턴 (Anthropic Building Effective Agents)](chunks/v3-workflow-patterns.md): 워크플로우와 에이전트의 차이는? (verified)
 

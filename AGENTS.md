@@ -12,7 +12,7 @@ Claude Code 전용 항목은 `CLAUDE.md`에 있다. **두 파일이 겹치는 �
 도구**로 구성된다. 산출물은 두 층이다.
 
 - 사람이 읽는 위키 — `kb/docs/`
-- RAG 색인용 청크 — `kb/chunks/` (v3.0, 101개)
+- RAG 색인용 청크 — `kb/chunks/` (v3.0, 102개)
 - 에이전트용 라우팅 색인 — `kb/INDEX.md`, `kb/llms.txt`
 
 ## 절대 어기지 말 것
@@ -116,6 +116,10 @@ python3 tools/build_v3.py --v1 kb/_inputs/v1/rag_chunks \
 ```
 
 재빌드 후에는 골든셋·qrels·기준선·`kb/INDEX.md`를 함께 재생성해야 한다.
+
+**청크를 추가했으면 평가 세트도 확장한다.** 새 청크는 방해물로만 집계되고 정답으로는
+집계되지 않으므로, 평가 세트를 고정한 채 코퍼스만 키우면 점수가 내려간다.
+실제로 한 번 겪었다 — `docs/TEST-RESULTS.md` §12.9.
 
 ## 품질 게이트
 

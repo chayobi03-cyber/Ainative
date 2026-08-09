@@ -12,7 +12,7 @@ review_by: "2026-11-05"
 source_documents: ["03_operations/03-observability.md"]
 source_urls: ["https://hidekazu-konishi.com/entry/claude_code_hooks_complete_guide.html", "https://okhlopkov.com/claude-code-setup-mcp-hooks-skills-2026/"]
 retrieval_questions: ["관측성 및 유지보수란 무엇인가?", "관측성 및 유지보수의 핵심 개념은?", "관측성 및 유지보수의 세션 로깅 (Stop 훅)은 무엇인가?", "관측성 및 유지보수의 MCP 서버 상태 모니터링은 무엇인가?", "관측성 및 유지보수의 컨텍스트 사용량 확인은 무엇인가?"]
-related_chunks: ["v3-01-troubleshooting", "v3-cost-visibility"]
+related_chunks: ["v3-01-troubleshooting", "v3-cost-visibility", "v3-orchestration-patterns"]
 supersedes: ["chunk.068", "chunk.069", "chunk.070", "chunk.071"]
 ---
 
